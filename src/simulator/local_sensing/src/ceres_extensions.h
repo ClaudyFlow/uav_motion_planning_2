@@ -10,9 +10,20 @@
 #ifndef SRC_SIMULATOR_LOCAL_SENSING_SRC_CERES_EXTENSIONS
 #define SRC_SIMULATOR_LOCAL_SENSING_SRC_CERES_EXTENSIONS
 
+#pragma region include
+#pragma region include::project
+
+#pragma endregion include::project
+#pragma region include::third
+
 #include <ceres/ceres.h>
 
 #include <Eigen/Eigen>
+#pragma endregion include::third
+#pragma region include::standard
+
+#pragma endregion include::standard
+#pragma endregion include
 
 namespace ceres_ext {
 
