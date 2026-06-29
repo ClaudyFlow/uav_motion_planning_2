@@ -216,7 +216,9 @@ ament_target_dependencies(plan_env rclcpp std_msgs service_msgs Eigen3)
 target_include_directories(plan_env PUBLIC
   ${rclcpp_INCLUDE_DIRS}
   ${std_msgs_INCLUDE_DIRS}
+  ${service_msgs_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
+  /opt/ros/lyrical/include/service_msgs
   include
   src
 )
