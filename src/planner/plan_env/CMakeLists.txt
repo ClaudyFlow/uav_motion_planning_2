@@ -210,7 +210,7 @@ file(GLOB_RECURSE PLAN_ENV_SOURCES "src/plan_env/*.cc")
 
 add_library(plan_env ${PLAN_ENV_SOURCES})
 
-ament_target_dependencies(plan_env rclcpp std_msgs service_msgs Eigen3)
+ament_target_dependencies(plan_env rclcpp std_msgs service_msgs Eigen3 cv_bridge)
 
 # 确保 rclcpp 和 std_msgs 的 include 目录被加入
 target_include_directories(plan_env PUBLIC
@@ -220,6 +220,7 @@ target_include_directories(plan_env PUBLIC
   ${EIGEN3_INCLUDE_DIRS}
   /opt/ros/lyrical/include/service_msgs
   /opt/ros/lyrical/include/type_description_interfaces
+  /opt/ros/lyrical/include/cv_bridge/cv_bridge
   /opt/ros/lyrical/include
   include
   src
