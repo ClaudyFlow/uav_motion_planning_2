@@ -1,5 +1,6 @@
 #include <cloud_banchmark/cloud_banchmarkConfig.h>
 #include <cv_bridge/cv_bridge.h>
+// ROS1: #include <dynamic_reconfigure/server.h>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -10,7 +11,8 @@
 #include <message_filters/synchronizer.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <Eigen/Eigen>
 #include <fstream>
@@ -24,6 +26,7 @@ using namespace cv;
 using namespace std;
 using namespace Eigen;
 
+// ROS1: typedef message_filters::sync_policies::ApproximateTime<
 typedef message_filters::sync_policies::ApproximateTime<
     sensor_msgs::Image, geometry_msgs::TransformStamped>
     approx_policy;
@@ -38,9 +41,12 @@ cv::Mat undist_map1, undist_map2;
 bool is_distorted(false);
 
 DepthRender depthrender;
-ros::Publisher pub_depth;
-ros::Publisher pub_color;
-ros::Publisher pub_posedimage;
+// ROS1: ros::Publisher pub_depth;
+rclcpp::Publisher pub_depth;
+// ROS1: ros::Publisher pub_color;
+rclcpp::Publisher pub_color;
+// ROS1: ros::Publisher pub_posedimage;
+rclcpp::Publisher pub_posedimage;
 
 Matrix4d vicon2body;
 Matrix4d cam02body;
@@ -214,7 +220,8 @@ void image_pose_callback(
 void render_currentpose() {
   solve_pnp();
 
-  double this_time = ros::Time::now().toSec();
+// ROS1:   double this_time = ros::Time::now().toSec();
+  double this_time = rclcpp::Clock().now().toSec();
 
   Matrix4d cam_pose = cam2world.inverse();
 
@@ -231,7 +238,8 @@ void render_currentpose() {
       depth_mat.at<float>(i, j) = depth;
     }
   ROS_INFO("render cost %lf ms.",
-           (ros::Time::now().toSec() - this_time) * 1000.0f);
+// ROS1:            (ros::Time::now().toSec() - this_time) * 1000.0f);
+           (rclcpp::Clock().now().toSec() - this_time) * 1000.0f);
   printf("max_depth %lf.\n", max);
 
   cv_bridge::CvImage out_msg;
@@ -258,8 +266,10 @@ void render_currentpose() {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "cloud_banchmark");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "cloud_banchmark");
+  rclcpp::init(argc, argv, "cloud_banchmark");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
   nh.getParam("cam_width", width);
   nh.getParam("cam_height", height);
@@ -324,10 +334,13 @@ int main(int argc, char** argv) {
   depthrender.set_data(cloud_data);
   depth_hostptr = (int*)malloc(width * height * sizeof(int));
 
+// ROS1:   message_filters::Subscriber<sensor_msgs::Image> image_sub(
   message_filters::Subscriber<sensor_msgs::Image> image_sub(
       nh, "/cam0/image_raw", 30);
+// ROS1:   message_filters::Subscriber<geometry_msgs::TransformStamped> pose_sub(
   message_filters::Subscriber<geometry_msgs::TransformStamped> pose_sub(
       nh, "/vicon/firefly_sbx/firefly_sbx", 30);
+// ROS1:   message_filters::Synchronizer<approx_policy> sync2(approx_policy(100),
   message_filters::Synchronizer<approx_policy> sync2(approx_policy(100),
                                                      image_sub, pose_sub);
   sync2.registerCallback(boost::bind(image_pose_callback, _1, _2));
@@ -345,8 +358,10 @@ int main(int argc, char** argv) {
   setMouseCallback("depth_image", depthBackFunc, NULL);
   vicon2leica = Matrix4d::Identity();
 
-  while (ros::ok()) {
-    ros::spinOnce();
+// ROS1:   while (ros::ok()) {
+  while (rclcpp::ok()) {
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
     cv::waitKey(30);
   }
 }

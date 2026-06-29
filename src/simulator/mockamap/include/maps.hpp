@@ -3,7 +3,8 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/PointCloud2.h>
 
 namespace mocka {

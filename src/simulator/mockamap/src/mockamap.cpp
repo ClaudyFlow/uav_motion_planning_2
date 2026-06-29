@@ -48,11 +48,15 @@ void optimizeMap(mocka::Maps::BasicInfo& in) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "mockamap");
-  ros::NodeHandle nh;
-  ros::NodeHandle nh_private("~");
+// ROS1:   ros::init(argc, argv, "mockamap");
+  rclcpp::init(argc, argv, "mockamap");
+// ROS1:   ros::NodeHandle nh;
+  rclcpp::Node::SharedPtr nh;
+// ROS1:   ros::NodeHandle nh_private("~");
+  rclcpp::Node::SharedPtr nh_private("~");
 
-  ros::Publisher pcl_pub =
+// ROS1:   ros::Publisher pcl_pub =
+  rclcpp::Publisher pcl_pub =
       nh.advertise<sensor_msgs::PointCloud2>("mock_map", 1);
   pcl::PointCloud<pcl::PointXYZ> cloud;
   sensor_msgs::PointCloud2 output;
@@ -68,14 +72,28 @@ int main(int argc, char** argv) {
 
   int type;
 
-  nh_private.param("seed", seed, 4546);
-  nh_private.param("update_freq", update_freq, 1.0);
-  nh_private.param("resolution", scale, 0.38);
-  nh_private.param("x_length", sizeX, 100);
-  nh_private.param("y_length", sizeY, 100);
-  nh_private.param("z_length", sizeZ, 10);
+// ROS1:   nh_private.param("seed", seed, 4546);
+nh_private->declare_parameter<seed>("seed", 4546);
+nh_private->get_parameter("seed", seed);
+// ROS1:   nh_private.param("update_freq", update_freq, 1.0);
+nh_private->declare_parameter<update_freq>("update_freq", 1.0);
+nh_private->get_parameter("update_freq", update_freq);
+// ROS1:   nh_private.param("resolution", scale, 0.38);
+nh_private->declare_parameter<scale>("resolution", 0.38);
+nh_private->get_parameter("resolution", scale);
+// ROS1:   nh_private.param("x_length", sizeX, 100);
+nh_private->declare_parameter<sizeX>("x_length", 100);
+nh_private->get_parameter("x_length", sizeX);
+// ROS1:   nh_private.param("y_length", sizeY, 100);
+nh_private->declare_parameter<sizeY>("y_length", 100);
+nh_private->get_parameter("y_length", sizeY);
+// ROS1:   nh_private.param("z_length", sizeZ, 10);
+nh_private->declare_parameter<sizeZ>("z_length", 10);
+nh_private->get_parameter("z_length", sizeZ);
 
-  nh_private.param("type", type, 1);
+// ROS1:   nh_private.param("type", type, 1);
+nh_private->declare_parameter<type>("type", 1);
+nh_private->get_parameter("type", type);
 
   scale = 1 / scale;
   sizeX = sizeX * scale;
@@ -99,10 +117,13 @@ int main(int argc, char** argv) {
   //  optimizeMap(info);
 
   //! @note publish loop
-  ros::Rate loop_rate(update_freq);
-  while (ros::ok()) {
+// ROS1:   ros::Rate loop_rate(update_freq);
+  rclcpp::Rate loop_rate(update_freq);
+// ROS1:   while (ros::ok()) {
+  while (rclcpp::ok()) {
     pcl_pub.publish(output);
-    ros::spinOnce();
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
     loop_rate.sleep();
   }
 

@@ -1,4 +1,5 @@
-#ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_KINO_ASTAR
+// ROS1: #ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_KINO_ASTAR
+#include <rclcpp/rclcpp.hpp>
 #define SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_KINO_ASTAR
 
 #pragma region include
@@ -113,7 +114,8 @@ class KinoAStar {
  public:
   KinoAStar() = default;
   ~KinoAStar();
-  void setParam(ros::NodeHandle& nh);
+// ROS1:   void setParam(ros::NodeHandle& nh);
+  void setParam(rclcpp::Node::SharedPtr nh);
   void init();
   void setGridMap(GridMap::Ptr& grid_map);
   // second-order interator model
@@ -161,10 +163,12 @@ class KinoAStar {
   double robot_h_;
 
   /* main visulization parameters */
-  ros::Publisher path_node_pub_;
+// ROS1:   ros::Publisher path_node_pub_;
+  rclcpp::Publisher path_node_pub_;
   visualization_msgs::Marker path_node_marker_;
 
-  ros::Publisher elliposid_pub_;
+// ROS1:   ros::Publisher elliposid_pub_;
+  rclcpp::Publisher elliposid_pub_;
 
   enum { REACH_END = 1, NO_PATH_FOUND = 2 };
 
@@ -177,7 +181,8 @@ class KinoAStar {
   /* main map parameters: cloud map */
   std::vector<Eigen::Vector3d> obs_;
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
-  ros::Subscriber local_cloud_sub_;
+// ROS1:   ros::Subscriber local_cloud_sub_;
+  rclcpp::Subscriber local_cloud_sub_;
 
   /* main helper functions */
   Eigen::Vector3i posToIndex(Eigen::Vector3d pos);

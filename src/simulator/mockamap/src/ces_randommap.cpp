@@ -33,12 +33,17 @@ pcl::search::KdTree<pcl::PointXYZ> kdtreeLocalMap;
 vector<int> pointIdxRadiusSearch;
 vector<float> pointRadiusSquaredDistance;
 
-ros::Publisher _local_map_pub;
-ros::Publisher _local_map_inflate_pub;
-ros::Publisher _global_map_pub;
+// ROS1: ros::Publisher _local_map_pub;
+rclcpp::Publisher _local_map_pub;
+// ROS1: ros::Publisher _local_map_inflate_pub;
+rclcpp::Publisher _local_map_inflate_pub;
+// ROS1: ros::Publisher _global_map_pub;
+rclcpp::Publisher _global_map_pub;
 
-ros::Subscriber _map_sub;
-ros::Subscriber odom_sub_;
+// ROS1: ros::Subscriber _map_sub;
+rclcpp::Subscriber _map_sub;
+// ROS1: ros::Subscriber odom_sub_;
+rclcpp::Subscriber odom_sub_;
 
 deque<nav_msgs::Odometry> _odom_queue;
 vector<double> state_;
@@ -49,7 +54,8 @@ double z_limit;
 double _SenseRate;
 double sensing_range_;
 
-// ros::Timer vis_map;
+// ROS1: // ros::Timer vis_map;
+// rclcpp::Timer vis_map;
 bool map_ok = false;
 bool has_odom_ = false;
 
@@ -159,7 +165,8 @@ int frequence_division_global = 40;
 void publishAllPoints() {
   if (!map_ok) return;
 
-  if ((ros::Time::now() - begin_time).toSec() > 7.0) return;
+// ROS1:   if ((ros::Time::now() - begin_time).toSec() > 7.0) return;
+  if ((rclcpp::Clock().now() - begin_time).toSec() > 7.0) return;
 
   frequence_division_global--;
   if (frequence_division_global == 0) {
@@ -174,7 +181,8 @@ void publishAllPoints() {
 void pubSensedPoints() {
   if (!map_ok || !has_odom_) return;
 
-  // ros::Time time_bef_sensing = ros::Time::now();
+// ROS1:   // ros::Time time_bef_sensing = ros::Time::now();
+  // ros::Time time_bef_sensing = rclcpp::Clock().now();
 
   pcl::PointCloud<pcl::PointXYZ> localMap;
 
@@ -212,7 +220,8 @@ void pubSensedPoints() {
   local_pcd_.header.frame_id = kFrameIdNs_;
   _local_map_pub.publish(local_pcd_);
 
-  ros::Time time_aft_sensing = ros::Time::now();
+// ROS1:   ros::Time time_aft_sensing = ros::Time::now();
+  ros::Time time_aft_sensing = rclcpp::Clock().now();
 
   if ((time_aft_sensing - begin_time).toSec() > 5.0) return;
 

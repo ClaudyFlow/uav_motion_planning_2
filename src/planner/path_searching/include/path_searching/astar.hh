@@ -1,4 +1,5 @@
-#ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_ASTAR
+// ROS1: #ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_ASTAR
+#include <rclcpp/rclcpp.hpp>
 #define SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_ASTAR
 
 #pragma region include
@@ -140,7 +141,8 @@ class AStar {
 #pragma endregion public_enum
 #pragma region public_function
  public:
-  void setParam(ros::NodeHandle& nh);
+// ROS1:   void setParam(ros::NodeHandle& nh);
+  void setParam(rclcpp::Node::SharedPtr nh);
   void init();
   void setGridMap(GridMap::Ptr& grid_map);
   int search(Eigen::Vector3d start_pt, Eigen::Vector3d end_pt,

@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
+<!-- ======= ROS1 VERSION (commented out) ======= -->
+<!--
+<?xml version="1.0"?>
 <package format="2">
   <name>traj_optimization</name>
   <version>0.0.0</version>
@@ -65,4 +68,20 @@
     <!-- Other tools can request additional information be placed here -->
 
   </export>
+</package>
+-->
+
+<!-- ======= ROS2 VERSION ======= -->
+<package format="3">
+  <name>traj_optimization</name>
+  <version>0.0.0</version>
+  <description>The traj_optimization package</description>
+  <maintainer email="ubuntu@todo.todo">ubuntu</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>Eigen3</depend>
+  <depend>OsqpEigen</depend>
 </package>

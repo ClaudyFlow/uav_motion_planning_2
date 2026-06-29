@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include_header
 #include "path_searching/rrt.hh"
 #pragma endregion include_header
@@ -14,12 +15,23 @@
 #pragma endregion include
 
 namespace path_searching {
-void RRT::setParam(ros::NodeHandle& nh) {
-  nh.param("rrt/max_tree_node_num", max_tree_node_num_, 100000);
-  nh.param("rrt/step_length", step_length_, 0.5);
-  nh.param("rrt/max_allowed_time", max_allowed_time_, 5.0);
-  nh.param("rrt/search_radius", search_radius_, 0.5);
-  nh.param("rrt/collision_check_resolution", resolution_, 0.05);
+// ROS1: void RRT::setParam(ros::NodeHandle& nh) {
+void RRT::setParam(rclcpp::Node::SharedPtr nh) {
+// ROS1:   nh.param("rrt/max_tree_node_num", max_tree_node_num_, 100000);
+nh->declare_parameter<max_tree_node_num_>("rrt/max_tree_node_num", 100000);
+nh->get_parameter("rrt/max_tree_node_num", max_tree_node_num_);
+// ROS1:   nh.param("rrt/step_length", step_length_, 0.5);
+nh->declare_parameter<step_length_>("rrt/step_length", 0.5);
+nh->get_parameter("rrt/step_length", step_length_);
+// ROS1:   nh.param("rrt/max_allowed_time", max_allowed_time_, 5.0);
+nh->declare_parameter<max_allowed_time_>("rrt/max_allowed_time", 5.0);
+nh->get_parameter("rrt/max_allowed_time", max_allowed_time_);
+// ROS1:   nh.param("rrt/search_radius", search_radius_, 0.5);
+nh->declare_parameter<search_radius_>("rrt/search_radius", 0.5);
+nh->get_parameter("rrt/search_radius", search_radius_);
+// ROS1:   nh.param("rrt/collision_check_resolution", resolution_, 0.05);
+nh->declare_parameter<resolution_>("rrt/collision_check_resolution", 0.05);
+nh->get_parameter("rrt/collision_check_resolution", resolution_);
   std::cout << "rrt/max_tree_node_num: " << max_tree_node_num_ << std::endl;
   std::cout << "rrt/step_length: " << step_length_ << std::endl;
 }
@@ -127,7 +139,8 @@ void RRT::retrievePath(RRTNode* end_node, std::vector<Eigen::Vector3d>& path) {
 int RRT::search(Eigen::Vector3d start_pt, Eigen::Vector3d end_pt,
                 std::vector<Eigen::Vector3d>& path) {
   // insert start_pt into kdtree
-  ros::Time start_time = ros::Time::now();
+// ROS1:   ros::Time start_time = ros::Time::now();
+  ros::Time start_time = rclcpp::Clock().now();
   RRTNode* start_node = path_node_pool_[use_node_num_];
   start_node->position = start_pt;
   start_node->g_cost = 0;
@@ -136,7 +149,8 @@ int RRT::search(Eigen::Vector3d start_pt, Eigen::Vector3d end_pt,
   kd_insert(kdtree_, start_node->position.data(), start_node);
 
   for (int i = 0; i < max_tree_node_num_; i++) {
-    ros::Time current_time = ros::Time::now();
+// ROS1:     ros::Time current_time = ros::Time::now();
+    ros::Time current_time = rclcpp::Clock().now();
     if ((current_time - start_time).toSec() > max_allowed_time_) {
       std::cout << "reach max allowed time" << std::endl;
       return NO_PATH_FOUND;
@@ -172,7 +186,8 @@ int RRT::search(Eigen::Vector3d start_pt, Eigen::Vector3d end_pt,
 
           std::cout << "reach end point" << std::endl;
           retrievePath(end_node, path);
-          ros::Time end_time = ros::Time::now();
+// ROS1:           ros::Time end_time = ros::Time::now();
+          ros::Time end_time = rclcpp::Clock().now();
           double total_time = (end_time - start_time).toSec();
           double total_cost = end_node->g_cost;
           std::cout << "total cost: " << total_cost << std::endl;

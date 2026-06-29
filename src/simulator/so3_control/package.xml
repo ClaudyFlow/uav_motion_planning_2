@@ -1,3 +1,6 @@
+<?xml version="1.0"?>
+<!-- ======= ROS1 VERSION (commented out) ======= -->
+<!--
 <package>
   <version>0.0.0</version>
   <name>so3_control</name>
@@ -27,4 +30,22 @@
   <export>
     <nodelet plugin="${prefix}/nodelet_plugin.xml" />
   </export>
+</package>
+-->
+
+<!-- ======= ROS2 VERSION ======= -->
+<package format="3">
+  <name>so3_control</name>
+  <version>0.0.0</version>
+  <description>so3_control</description>
+  <maintainer email="todo@todo.todo">Kartik Mohta</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>nav_msgs</depend>
+  <depend>quadrotor_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>Eigen3</depend>
 </package>

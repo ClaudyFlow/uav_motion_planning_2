@@ -1,3 +1,6 @@
+<?xml version="1.0"?>
+<!-- ======= ROS1 VERSION (commented out) ======= -->
+<!--
 <package>
   <description>multi_map_server</description>
   <name>multi_map_server</name>
@@ -34,4 +37,20 @@
   <export>
     <cpp cflags="-I${prefix}/include -I${prefix}/msg/cpp" />
   </export>
+</package>
+-->
+
+<!-- ======= ROS2 VERSION ======= -->
+<package format="3">
+  <name>multi_map_server</name>
+  <version>0.0.0</version>
+  <description>multi_map_server</description>
+  <maintainer email="eeshaojie@todo.todo">Shaojie Shen</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
 </package>

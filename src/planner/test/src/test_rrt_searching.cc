@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include::project
 #include "path_searching/rrt.hh"
 #pragma endregion include::project
@@ -13,12 +14,17 @@
 
 path_searching::RRT::Ptr rrt_;
 
-ros::Subscriber goal_sub;
-ros::Subscriber odom_sub;
+// ROS1: ros::Subscriber goal_sub;
+rclcpp::Subscriber goal_sub;
+// ROS1: ros::Subscriber odom_sub;
+rclcpp::Subscriber odom_sub;
 
-ros::Publisher path_pub;
-ros::Publisher rrt_tree_vertices_pub;
-ros::Publisher rrt_tree_edges_pub;
+// ROS1: ros::Publisher path_pub;
+rclcpp::Publisher path_pub;
+// ROS1: ros::Publisher rrt_tree_vertices_pub;
+rclcpp::Publisher rrt_tree_vertices_pub;
+// ROS1: ros::Publisher rrt_tree_edges_pub;
+rclcpp::Publisher rrt_tree_edges_pub;
 
 nav_msgs::Odometry::ConstPtr odom_;
 std::vector<Eigen::Vector3d> path;
@@ -41,7 +47,8 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     // visualize searching-tree-vertices
     visualization_msgs::Marker vertices_marker;
     vertices_marker.header.frame_id = "world";
-    vertices_marker.header.stamp = ros::Time::now();
+// ROS1:     vertices_marker.header.stamp = ros::Time::now();
+    vertices_marker.header.stamp = rclcpp::Clock().now();
 
     vertices_marker.ns = "rrt/vertices";
     vertices_marker.id = 0;
@@ -75,7 +82,8 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     // visualize searching-tree-edges
     visualization_msgs::Marker edges_marker;
     edges_marker.header.frame_id = "world";
-    edges_marker.header.stamp = ros::Time::now();
+// ROS1:     edges_marker.header.stamp = ros::Time::now();
+    edges_marker.header.stamp = rclcpp::Clock().now();
 
     edges_marker.ns = "rrt/edges";
     edges_marker.id = 0;
@@ -110,7 +118,8 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     // visualize path
     visualization_msgs::Marker path_marker;
     path_marker.header.frame_id = "world";
-    path_marker.header.stamp = ros::Time::now();
+// ROS1:     path_marker.header.stamp = ros::Time::now();
+    path_marker.header.stamp = rclcpp::Clock().now();
 
     path_marker.ns = "rrt/path";
     path_marker.id = 0;
@@ -149,12 +158,16 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "test_rrt_searching");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "test_rrt_searching");
+  rclcpp::init(argc, argv, "test_rrt_searching");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
-  ros::Subscriber goal_sub =
+// ROS1:   ros::Subscriber goal_sub =
+  rclcpp::Subscriber goal_sub =
       nh.subscribe<geometry_msgs::PoseStamped>("/goal", 10, &GoalCallback);
-  ros::Subscriber odom_sub =
+// ROS1:   ros::Subscriber odom_sub =
+  rclcpp::Subscriber odom_sub =
       nh.subscribe<nav_msgs::Odometry>("/visual_slam/odom", 10, &OdomCallback);
 
   path_pub = nh.advertise<visualization_msgs::Marker>("path", 10);
@@ -172,6 +185,7 @@ int main(int argc, char** argv) {
   rrt_->setGridMap(grid_map);
   rrt_->init();
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

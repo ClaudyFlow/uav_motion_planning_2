@@ -5,7 +5,8 @@
 #include "nav_msgs/Path.h"
 #include "pose_utils.h"
 #include "quadrotor_msgs/PositionCommand.h"
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include "sensor_msgs/Range.h"
 #include "tf/transform_broadcaster.h"
 #include "visualization_msgs/Marker.h"
@@ -21,11 +22,14 @@ bool cross_config_ = false, tf45_ = false, cov_pos_ = false, cov_vel_ = false,
 
 colvec poseOrigin(6);
 
-ros::Publisher pose_pub_, path_pub_, vel_pub_, cov_pub_, cov_vel_pub_,
+// ROS1: ros::Publisher pose_pub_, path_pub_, vel_pub_, cov_pub_, cov_vel_pub_,
+rclcpp::Publisher pose_pub_, path_pub_, vel_pub_, cov_pub_, cov_vel_pub_,
     traj_pub_, sensor_pub_, mesh_pub_, height_pub_;
-ros::Subscriber odom_sub_, cmd_sub_;
+// ROS1: ros::Subscriber odom_sub_, cmd_sub_;
+rclcpp::Subscriber odom_sub_, cmd_sub_;
 
-tf::TransformBroadcaster* broadcaster;
+// ROS1: tf::TransformBroadcaster* broadcaster;
+tf2_ros::TransformBroadcaster* broadcaster;
 geometry_msgs::PoseStamped poseROS;
 nav_msgs::Path pathROS;
 
@@ -220,7 +224,8 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg) {
   ros::Time t = msg->header.stamp;
   if ((t - pt).toSec() > 0.5) {
     trajROS.header.frame_id = frame_id_;
-    trajROS.header.stamp = ros::Time::now();
+// ROS1:     trajROS.header.stamp = ros::Time::now();
+    trajROS.header.stamp = rclcpp::Clock().now();
     trajROS.ns = string("trajectory");
     trajROS.type = visualization_msgs::Marker::LINE_LIST;
     trajROS.action = visualization_msgs::Marker::ADD;
@@ -329,30 +334,43 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg) {
 
   // TF for raw sensor visualization
   if (tf45_) {
+// ROS1:     tf::Transform transform;
     tf::Transform transform;
+// ROS1:     transform.setOrigin(tf::Vector3(pose(0), pose(1), pose(2)));
     transform.setOrigin(tf::Vector3(pose(0), pose(1), pose(2)));
+// ROS1:     transform.setRotation(tf::Quaternion(q(1), q(2), q(3), q(0)));
     transform.setRotation(tf::Quaternion(q(1), q(2), q(3), q(0)));
 
+// ROS1:     tf::Transform transform45;
     tf::Transform transform45;
+// ROS1:     transform45.setOrigin(tf::Vector3(0, 0, 0));
     transform45.setOrigin(tf::Vector3(0, 0, 0));
     colvec y45 = zeros<colvec>(3);
     y45(0) = 45.0 * M_PI / 180;
     colvec q45 = R_to_quaternion(ypr_to_R(y45));
+// ROS1:     transform45.setRotation(tf::Quaternion(q45(1), q45(2), q45(3), q45(0)));
     transform45.setRotation(tf::Quaternion(q45(1), q45(2), q45(3), q45(0)));
 
+// ROS1:     tf::Transform transform90;
     tf::Transform transform90;
+// ROS1:     transform90.setOrigin(tf::Vector3(0, 0, 0));
     transform90.setOrigin(tf::Vector3(0, 0, 0));
     colvec p90 = zeros<colvec>(3);
     p90(1) = 90.0 * M_PI / 180;
     colvec q90 = R_to_quaternion(ypr_to_R(p90));
+// ROS1:     transform90.setRotation(tf::Quaternion(q90(1), q90(2), q90(3), q90(0)));
     transform90.setRotation(tf::Quaternion(q90(1), q90(2), q90(3), q90(0)));
 
+// ROS1:     broadcaster->sendTransform(tf::StampedTransform(
     broadcaster->sendTransform(tf::StampedTransform(
         transform, msg->header.stamp, frame_id_, string("base")));
+// ROS1:     broadcaster->sendTransform(tf::StampedTransform(
     broadcaster->sendTransform(tf::StampedTransform(
         transform45, msg->header.stamp, string("base"), string("laser")));
+// ROS1:     broadcaster->sendTransform(tf::StampedTransform(
     broadcaster->sendTransform(tf::StampedTransform(
         transform45, msg->header.stamp, string("base"), string("vision")));
+// ROS1:     broadcaster->sendTransform(tf::StampedTransform(
     broadcaster->sendTransform(tf::StampedTransform(
         transform90, msg->header.stamp, string("base"), string("height")));
   }
@@ -404,31 +422,63 @@ void cmd_callback(const quadrotor_msgs::PositionCommand cmd) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "odom_visualization");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "odom_visualization");
+  rclcpp::init(argc, argv, "odom_visualization");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
+// ROS1:   // nh.param("mesh_resource", mesh_resource,
   // nh.param("mesh_resource", mesh_resource,
   // std::string("package://odom_visualization/meshes/hummingbird.mesh"));
+// ROS1:   nh.param("mesh_resource", mesh_resource,
   nh.param("mesh_resource", mesh_resource,
            std::string("package://odom_visualization/meshes/f250.dae"));
 
-  nh.param("frame_id", frame_id_, string("world"));
-  nh.param("color/r", color_r_, 1.0);
-  nh.param("color/g", color_g_, 0.0);
-  nh.param("color/b", color_b_, 0.0);
-  nh.param("color/a", color_a_, 1.0);
-  nh.param("origin", origin_, false);
-  nh.param("robot_scale", scale_, 1.0);
+// ROS1:   nh.param("frame_id", frame_id_, string("world"));
+nh->declare_parameter<frame_id_>("frame_id", string("world");
+nh->get_parameter("frame_id", frame_id_);
+// ROS1:   nh.param("color/r", color_r_, 1.0);
+nh->declare_parameter<color_r_>("color/r", 1.0);
+nh->get_parameter("color/r", color_r_);
+// ROS1:   nh.param("color/g", color_g_, 0.0);
+nh->declare_parameter<color_g_>("color/g", 0.0);
+nh->get_parameter("color/g", color_g_);
+// ROS1:   nh.param("color/b", color_b_, 0.0);
+nh->declare_parameter<color_b_>("color/b", 0.0);
+nh->get_parameter("color/b", color_b_);
+// ROS1:   nh.param("color/a", color_a_, 1.0);
+nh->declare_parameter<color_a_>("color/a", 1.0);
+nh->get_parameter("color/a", color_a_);
+// ROS1:   nh.param("origin", origin_, false);
+nh->declare_parameter<origin_>("origin", false);
+nh->get_parameter("origin", origin_);
+// ROS1:   nh.param("robot_scale", scale_, 1.0);
+nh->declare_parameter<scale_>("robot_scale", 1.0);
+nh->get_parameter("robot_scale", scale_);
 
-  nh.param("tf45", tf45_, false);
-  nh.param("cross_config", cross_config_, false);
-  nh.param("covariance_scale", cov_scale_, 100.0);
-  nh.param("covariance_position", cov_pos_, false);
-  nh.param("covariance_velocity", cov_vel_, false);
-  nh.param("covariance_color", cov_color_, false);
+// ROS1:   nh.param("tf45", tf45_, false);
+nh->declare_parameter<tf45_>("tf45", false);
+nh->get_parameter("tf45", tf45_);
+// ROS1:   nh.param("cross_config", cross_config_, false);
+nh->declare_parameter<cross_config_>("cross_config", false);
+nh->get_parameter("cross_config", cross_config_);
+// ROS1:   nh.param("covariance_scale", cov_scale_, 100.0);
+nh->declare_parameter<cov_scale_>("covariance_scale", 100.0);
+nh->get_parameter("covariance_scale", cov_scale_);
+// ROS1:   nh.param("covariance_position", cov_pos_, false);
+nh->declare_parameter<cov_pos_>("covariance_position", false);
+nh->get_parameter("covariance_position", cov_pos_);
+// ROS1:   nh.param("covariance_velocity", cov_vel_, false);
+nh->declare_parameter<cov_vel_>("covariance_velocity", false);
+nh->get_parameter("covariance_velocity", cov_vel_);
+// ROS1:   nh.param("covariance_color", cov_color_, false);
+nh->declare_parameter<cov_color_>("covariance_color", false);
+nh->get_parameter("covariance_color", cov_color_);
 
-  ros::Subscriber odom_sub_ = nh.subscribe("odom", 100, odom_callback);
-  ros::Subscriber cmd_sub_ = nh.subscribe("cmd", 100, cmd_callback);
+// ROS1:   ros::Subscriber odom_sub_ = nh.subscribe("odom", 100, odom_callback);
+  rclcpp::Subscriber odom_sub_ = nh.subscribe("odom", 100, odom_callback);
+// ROS1:   ros::Subscriber cmd_sub_ = nh.subscribe("cmd", 100, cmd_callback);
+  rclcpp::Subscriber cmd_sub_ = nh.subscribe("cmd", 100, cmd_callback);
 
   pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("pose", 100, true);
   path_pub_ = nh.advertise<nav_msgs::Path>("path", 100, true);
@@ -441,10 +491,12 @@ int main(int argc, char** argv) {
   mesh_pub_ = nh.advertise<visualization_msgs::Marker>("robot", 100, true);
   height_pub_ = nh.advertise<sensor_msgs::Range>("height", 100, true);
 
-  tf::TransformBroadcaster b;
+// ROS1:   tf::TransformBroadcaster b;
+  tf2_ros::TransformBroadcaster b;
   broadcaster = &b;
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
 
   return 0;
 }

@@ -31,7 +31,8 @@
 #define RVIZ_GOAL_TOOL_H
 
 #ifndef Q_MOC_RUN  // See: https://bugreports.qt-project.org/browse/QTBUG-22829
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <QObject>
 
@@ -57,8 +58,10 @@ class Goal3DTool : public Pose3DTool {
   void updateTopic();
 
  private:
-  ros::NodeHandle nh_;
-  ros::Publisher pub_;
+// ROS1:   ros::NodeHandle nh_;
+  rclcpp::Node::SharedPtr nh_;
+// ROS1:   ros::Publisher pub_;
+  rclcpp::Publisher pub_;
 
   StringProperty* topic_property_;
 };

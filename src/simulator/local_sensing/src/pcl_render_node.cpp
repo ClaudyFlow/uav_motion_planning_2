@@ -1,4 +1,5 @@
 #include <fstream>
+// ROS1: #include <dynamic_reconfigure/server.h>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -9,7 +10,8 @@
 #include <message_filters/synchronizer.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Bool.h>
@@ -47,18 +49,25 @@ int width, height;
 double fx, fy, cx, cy;
 
 DepthRender depthrender;
-ros::Publisher pub_depth;
-ros::Publisher pub_color;
-ros::Publisher pub_pose;
-ros::Publisher pub_pcl_wolrd;
+// ROS1: ros::Publisher pub_depth;
+rclcpp::Publisher pub_depth;
+// ROS1: ros::Publisher pub_color;
+rclcpp::Publisher pub_color;
+// ROS1: ros::Publisher pub_pose;
+rclcpp::Publisher pub_pose;
+// ROS1: ros::Publisher pub_pcl_wolrd;
+rclcpp::Publisher pub_pcl_wolrd;
 
 sensor_msgs::PointCloud2 local_map_pcl;
 sensor_msgs::PointCloud2 local_depth_pcl;
 
-ros::Subscriber odom_sub_;
-ros::Subscriber global_map_sub_, local_map_sub_;
+// ROS1: ros::Subscriber odom_sub_;
+rclcpp::Subscriber odom_sub_;
+// ROS1: ros::Subscriber global_map_sub_, local_map_sub_;
+rclcpp::Subscriber global_map_sub_, local_map_sub_;
 
-ros::Timer local_sensing_timer_, estimation_timer;
+// ROS1: ros::Timer local_sensing_timer_, estimation_timer;
+rclcpp::Timer local_sensing_timer_, estimation_timer;
 
 bool has_global_map(false);
 bool has_local_map(false);
@@ -135,16 +144,22 @@ void rcvOdometryCallbck(const nav_msgs::Odometry& odom) {
   last_pose_world(2) = odom.pose.pose.position.z;
 
   // publish tf
-  /*static tf::TransformBroadcaster br;
+// ROS1:   /*static tf::TransformBroadcaster br;
+  /*static tf2_ros::TransformBroadcaster br;
+// ROS1:   tf::Transform transform;
   tf::Transform transform;
+// ROS1:   transform.setOrigin( tf::Vector3(cam2world(0,3), cam2world(1,3),
   transform.setOrigin( tf::Vector3(cam2world(0,3), cam2world(1,3),
+// ROS1:   cam2world(2,3) )); transform.setRotation(tf::Quaternion(cam2world_quat.x(),
   cam2world(2,3) )); transform.setRotation(tf::Quaternion(cam2world_quat.x(),
   cam2world_quat.y(), cam2world_quat.z(), cam2world_quat.w()));
+// ROS1:   br.sendTransform(tf::StampedTransform(transform, last_odom_stamp, "world",
   br.sendTransform(tf::StampedTransform(transform, last_odom_stamp, "world",
   "camera")); //publish transform from world frame to quadrotor frame.*/
 }
 
-void pubCameraPose(const ros::TimerEvent& event) {
+// ROS1: void pubCameraPose(const ros::TimerEvent& event) {
+void pubCameraPose(const rclcpp::TimerEvent& event) {
   // cout<<"pub cam pose"
   geometry_msgs::PoseStamped camera_pose;
   camera_pose.header = odom_.header;
@@ -159,7 +174,8 @@ void pubCameraPose(const ros::TimerEvent& event) {
   pub_pose.publish(camera_pose);
 }
 
-void renderSensedPoints(const ros::TimerEvent& event) {
+// ROS1: void renderSensedPoints(const ros::TimerEvent& event) {
+void renderSensedPoints(const rclcpp::TimerEvent& event) {
   // if(! has_global_map || ! has_odom_) return;
   if (!has_global_map && !has_local_map) return;
 
@@ -266,7 +282,8 @@ void render_pcl_world() {
 }
 
 void render_currentpose() {
-  double this_time = ros::Time::now().toSec();
+// ROS1:   double this_time = ros::Time::now().toSec();
+  double this_time = rclcpp::Clock().now().toSec();
 
   Matrix4d cam_pose = cam2world.inverse();
 
@@ -288,7 +305,8 @@ void render_currentpose() {
       max = depth > max ? depth : max;
       depth_mat.at<float>(i, j) = depth;
     }
-  // ROS_INFO("render cost %lf ms.", (ros::Time::now().toSec() - this_time) *
+// ROS1:   // ROS_INFO("render cost %lf ms.", (ros::Time::now().toSec() - this_time) *
+  // ROS_INFO("render cost %lf ms.", (rclcpp::Clock().now().toSec() - this_time) *
   // 1000.0f); printf("max_depth %lf.\n", max);
 
   cv_bridge::CvImage out_msg;
@@ -313,8 +331,10 @@ void render_currentpose() {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "pcl_render");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "pcl_render");
+  rclcpp::init(argc, argv, "pcl_render");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
   nh.getParam("cam_width", width);
   nh.getParam("cam_height", height);
@@ -373,11 +393,15 @@ int main(int argc, char** argv) {
   GLY_SIZE_ = (int)(y_size_ * inv_resolution_);
   GLZ_SIZE_ = (int)(z_size_ * inv_resolution_);
 
-  ros::Rate rate(100);
-  bool status = ros::ok();
+// ROS1:   ros::Rate rate(100);
+  rclcpp::Rate rate(100);
+// ROS1:   bool status = ros::ok();
+  bool status = rclcpp::ok();
   while (status) {
-    ros::spinOnce();
-    status = ros::ok();
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
+// ROS1:     status = ros::ok();
+    status = rclcpp::ok();
     rate.sleep();
   }
 }

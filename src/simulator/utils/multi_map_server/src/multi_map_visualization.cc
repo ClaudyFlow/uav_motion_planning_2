@@ -3,11 +3,14 @@
 #include <multi_map_server/MultiOccupancyGrid.h>
 #include <multi_map_server/MultiSparseMap3D.h>
 #include <pose_utils.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/PointCloud.h>
 
-ros::Publisher pub1;
-ros::Publisher pub2;
+// ROS1: ros::Publisher pub1;
+rclcpp::Publisher pub1;
+// ROS1: ros::Publisher pub2;
+rclcpp::Publisher pub2;
 
 vector<Map2D> maps2d;
 vector<geometry_msgs::Pose> origins2d;
@@ -64,20 +67,25 @@ void maps3d_callback(const multi_map_server::MultiSparseMap3D::ConstPtr& msg) {
     }
   }
   // Publish
-  m.header.stamp = ros::Time::now();
+// ROS1:   m.header.stamp = ros::Time::now();
+  m.header.stamp = rclcpp::Clock().now();
   m.header.frame_id = string("/map");
   pub2.publish(m);
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "multi_map_visualization");
+// ROS1:   ros::init(argc, argv, "multi_map_visualization");
+  rclcpp::init(argc, argv, "multi_map_visualization");
   ros::NodeHandle n("~");
 
-  ros::Subscriber sub1 = n.subscribe("dmaps2d", 1, maps2d_callback);
-  ros::Subscriber sub2 = n.subscribe("dmaps3d", 1, maps3d_callback);
+// ROS1:   ros::Subscriber sub1 = n.subscribe("dmaps2d", 1, maps2d_callback);
+  rclcpp::Subscriber sub1 = n.subscribe("dmaps2d", 1, maps2d_callback);
+// ROS1:   ros::Subscriber sub2 = n.subscribe("dmaps3d", 1, maps3d_callback);
+  rclcpp::Subscriber sub2 = n.subscribe("dmaps3d", 1, maps3d_callback);
   pub1 = n.advertise<multi_map_server::MultiOccupancyGrid>("maps2d", 1, true);
   pub2 = n.advertise<sensor_msgs::PointCloud>("map3d", 1, true);
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include_header
 #include "path_searching/astar.hh"
 #pragma endregion include_header
@@ -15,10 +16,17 @@
 
 namespace path_searching {
 
-void AStar::setParam(ros::NodeHandle& nh) {
-  nh.param("astar/resolution", resolution_, 0.1);
-  nh.param("astar/lambda_heu", lambda_, 1.0);
-  nh.param("astar/allocated_node_num", allocated_node_num_, 100000);
+// ROS1: void AStar::setParam(ros::NodeHandle& nh) {
+void AStar::setParam(rclcpp::Node::SharedPtr nh) {
+// ROS1:   nh.param("astar/resolution", resolution_, 0.1);
+nh->declare_parameter<resolution_>("astar/resolution", 0.1);
+nh->get_parameter("astar/resolution", resolution_);
+// ROS1:   nh.param("astar/lambda_heu", lambda_, 1.0);
+nh->declare_parameter<lambda_>("astar/lambda_heu", 1.0);
+nh->get_parameter("astar/lambda_heu", lambda_);
+// ROS1:   nh.param("astar/allocated_node_num", allocated_node_num_, 100000);
+nh->declare_parameter<allocated_node_num_>("astar/allocated_node_num", 100000);
+nh->get_parameter("astar/allocated_node_num", allocated_node_num_);
 }
 
 void AStar::init() {
@@ -49,7 +57,8 @@ void AStar::init() {
 int AStar::search(Eigen::Vector3d start_pt, Eigen::Vector3d end_pt,
                   std::vector<Eigen::Vector3d>& path) {
   // if end_pt is out of map, return NO_PATH_FOUND
-  ros::Time start_time = ros::Time::now();
+// ROS1:   ros::Time start_time = ros::Time::now();
+  ros::Time start_time = rclcpp::Clock().now();
   if (grid_map_->isInMap(end_pt) == false) {
     std::cerr << "Error: end_pt is out of map." << std::endl;
     return NO_PATH_FOUND;
@@ -78,7 +87,8 @@ int AStar::search(Eigen::Vector3d start_pt, Eigen::Vector3d end_pt,
     if (abs(current_node->position(0) - end_pt(0)) < resolution_ &&
         abs(current_node->position(1) - end_pt(1)) < resolution_ &&
         abs(current_node->position(2) - end_pt(2)) < resolution_) {
-      ros::Time end_time = ros::Time::now();
+// ROS1:       ros::Time end_time = ros::Time::now();
+      ros::Time end_time = rclcpp::Clock().now();
       std::cout << "reached end_pt" << std::endl;
       std::cout << "total_time: " << (end_time - start_time).toSec()
                 << " seconds" << std::endl;

@@ -6,7 +6,8 @@
 #include <pcl/point_types.h>
 #include <pcl/search/kdtree.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/PointCloud2.h>
 
 #include <Eigen/Eigen>
@@ -17,14 +18,17 @@
 using namespace std;
 using namespace Eigen;
 
-ros::Publisher cloud_pub_;
+// ROS1: ros::Publisher cloud_pub_;
+rclcpp::Publisher cloud_pub_;
 std::string frame_id_;
 
 // sensor_msgs::PointCloud2 local_map_pcl, local_depth_pcl;
 
-ros::Subscriber odom_sub_, global_map_sub_, dynamic_sub_;  // , local_map_sub_
+// ROS1: ros::Subscriber odom_sub_, global_map_sub_, dynamic_sub_;  // , local_map_sub_
+rclcpp::Subscriber odom_sub_, global_map_sub_, dynamic_sub_;  // , local_map_sub_
 
-ros::Timer local_sensing_timer_;
+// ROS1: ros::Timer local_sensing_timer_;
+rclcpp::Timer local_sensing_timer_;
 
 bool has_global_map(false);
 // bool has_local_map(false);
@@ -98,7 +102,8 @@ void dynamicCloudCallBack(const geometry_msgs::PoseStamped& msg) {
   ros::Duration(0.5).sleep();  // adhoc
 }
 
-void renderSensedPoints(const ros::TimerEvent& event) {
+// ROS1: void renderSensedPoints(const ros::TimerEvent& event) {
+void renderSensedPoints(const rclcpp::TimerEvent& event) {
   if (!has_global_map || !has_odom_) return;
 
   Eigen::Quaterniond q;
@@ -155,8 +160,10 @@ void renderSensedPoints(const ros::TimerEvent& event) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "pcl_render_node");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "pcl_render_node");
+  rclcpp::init(argc, argv, "pcl_render_node");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
   nh.getParam("sensing_horizon", sensing_horizon_);
   nh.getParam("sensing_rate", sensing_rate_);
@@ -165,7 +172,9 @@ int main(int argc, char** argv) {
   // nh.getParam("map/x_size", x_size_);
   // nh.getParam("map/y_size", y_size_);
   // nh.getParam("map/z_size", z_size_);
-  nh.param("frame_id", frame_id_, string("world"));
+// ROS1:   nh.param("frame_id", frame_id_, string("world"));
+nh->declare_parameter<frame_id_>("frame_id", string("world");
+nh->get_parameter("frame_id", frame_id_);
 
   // subscribe point cloud
   odom_sub_ = nh.subscribe("odom", 10, odomCallbck);
@@ -192,11 +201,15 @@ int main(int argc, char** argv) {
   // GLY_SIZE_ = (int)(y_size_ * inv_resolution_);
   // GLZ_SIZE_ = (int)(z_size_ * inv_resolution_);
 
-  ros::Rate rate(100);
-  bool status = ros::ok();
+// ROS1:   ros::Rate rate(100);
+  rclcpp::Rate rate(100);
+// ROS1:   bool status = ros::ok();
+  bool status = rclcpp::ok();
   while (status) {
-    ros::spinOnce();
-    status = ros::ok();
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
+// ROS1:     status = ros::ok();
+    status = rclcpp::ok();
     rate.sleep();
   }
 

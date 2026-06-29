@@ -33,7 +33,8 @@
 #include <OGRE/OgreRay.h>
 #include <OGRE/OgreSceneNode.h>
 #include <OGRE/OgreViewport.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include "rviz/geometry.h"
 #include "rviz/load_resource.h"

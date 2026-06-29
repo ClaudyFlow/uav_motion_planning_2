@@ -1,9 +1,11 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include::project
 #include "traj_optimization/minimum_control.hh"
 #pragma endregion include::project
 #pragma region include::third
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #pragma endregion include::third
 #pragma region include::standard
 
@@ -11,8 +13,10 @@
 #pragma endregion include
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "test_qp_solve");
-  ros::NodeHandle nh;
+// ROS1:   ros::init(argc, argv, "test_qp_solve");
+  rclcpp::init(argc, argv, "test_qp_solve");
+// ROS1:   ros::NodeHandle nh;
+  rclcpp::Node::SharedPtr nh;
 
   traj_optimization::MinimumControl::Ptr min_jerk_ptr =
       std::make_shared<traj_optimization::MinimumControl>();
@@ -27,6 +31,7 @@ int main(int argc, char** argv) {
   time_vec << 1.0, 1.0, 1.0;
   min_jerk_ptr->solve(pos_1d, bound_vel, bound_acc, time_vec);
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

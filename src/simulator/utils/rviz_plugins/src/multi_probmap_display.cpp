@@ -165,7 +165,8 @@ void MultiProbMapDisplay::update(float wall_dt, float ros_dt) {
     int height = current_map_->maps[k].info.height;
 
     // Load pixel
-    // t[0] = ros::Time::now();
+// ROS1:     // t[0] = ros::Time::now();
+    // t[0] = rclcpp::Clock().now();
     unsigned int pixels_size = width * height;
     unsigned char* pixels = new unsigned char[pixels_size];
     memset(pixels, 255, pixels_size);
@@ -191,22 +192,26 @@ void MultiProbMapDisplay::update(float wall_dt, float ros_dt) {
         memcpy(pixels, &current_map_->maps[k].data[0], pixels_size);
     */
     // Set texture
-    // t[1] = ros::Time::now();
+// ROS1:     // t[1] = ros::Time::now();
+    // t[1] = rclcpp::Clock().now();
     Ogre::DataStreamPtr pixel_stream;
     pixel_stream.bind(new Ogre::MemoryDataStream(pixels, pixels_size));
     static int tex_count = 0;
     std::stringstream ss1;
     ss1 << "MultiMapTexture" << tex_count++;
     Ogre::TexturePtr _texture_;
-    // t[2] = ros::Time::now();
+// ROS1:     // t[2] = ros::Time::now();
+    // t[2] = rclcpp::Clock().now();
     _texture_ = Ogre::TextureManager::getSingleton().loadRawData(
         ss1.str(), Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         pixel_stream, width, height, Ogre::PF_L8, Ogre::TEX_TYPE_2D, 0);
-    // t[3] = ros::Time::now();
+// ROS1:     // t[3] = ros::Time::now();
+    // t[3] = rclcpp::Clock().now();
     texture_.push_back(_texture_);
     delete[] pixels;
     setStatus(StatusProperty::Ok, "Map", "Map OK");
-    // t[4] = ros::Time::now();
+// ROS1:     // t[4] = ros::Time::now();
+    // t[4] = rclcpp::Clock().now();
 
     // Set material
     static int material_count = 0;
@@ -240,11 +245,13 @@ void MultiProbMapDisplay::update(float wall_dt, float ros_dt) {
         scene_manager_->createManualObject(ss2.str());
     manual_object_.push_back(_manual_object_);
     scene_node_->attachObject(manual_object_.back());
+// ROS1:     float yo = tf::getYaw(current_map_->origins[k].orientation);
     float yo = tf::getYaw(current_map_->origins[k].orientation);
     float co = cos(yo);
     float so = sin(yo);
     float dxo = current_map_->origins[k].position.x;
     float dyo = current_map_->origins[k].position.y;
+// ROS1:     float ym = tf::getYaw(current_map_->maps[k].info.origin.orientation);
     float ym = tf::getYaw(current_map_->maps[k].info.origin.orientation);
     float dxm = current_map_->maps[k].info.origin.position.x;
     float dym = current_map_->maps[k].info.origin.position.y;

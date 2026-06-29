@@ -1,4 +1,5 @@
-#ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_RRT
+// ROS1: #ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_RRT
+#include <rclcpp/rclcpp.hpp>
 #define SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_RRT
 
 #pragma region include
@@ -65,7 +66,8 @@ class RRT {
 
  public:
   /* main interface */
-  void setParam(ros::NodeHandle& nh);
+// ROS1:   void setParam(ros::NodeHandle& nh);
+  void setParam(rclcpp::Node::SharedPtr nh);
   void setGridMap(GridMap::Ptr& grid_map);
   void getWholeTree(
       std::vector<Eigen::Vector3d>& vertices,

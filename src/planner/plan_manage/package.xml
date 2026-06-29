@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
+<!-- ======= ROS1 VERSION (commented out) ======= -->
+<!--
+<?xml version="1.0"?>
 <package format="2">
   <name>plan_manage</name>
   <version>0.0.0</version>
@@ -65,4 +68,25 @@
     <!-- Other tools can request additional information be placed here -->
 
   </export>
+</package>
+-->
+
+<!-- ======= ROS2 VERSION ======= -->
+<package format="3">
+  <name>plan_manage</name>
+  <version>0.0.0</version>
+  <description>The plan_manage package</description>
+  <maintainer email="ubuntu@todo.todo">ubuntu</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>plan_env</depend>
+  <depend>path_searching</depend>
+  <depend>traj_optimization</depend>
+  <depend>Eigen3</depend>
 </package>

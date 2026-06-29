@@ -1,3 +1,6 @@
+<?xml version="1.0"?>
+<!-- ======= ROS1 VERSION (commented out) ======= -->
+<!--
 <package>
   <version>0.0.0</version>
   <name>rviz_plugins</name>
@@ -25,4 +28,20 @@
   <export>
     <rviz plugin="${prefix}/plugin_description.xml" />
   </export>
+</package>
+-->
+
+<!-- ======= ROS2 VERSION ======= -->
+<!-- NOTE: rviz plugins are NOT compatible with ROS2 rviz2.
+     This package needs complete rewrite using ros2_rviz or similar.
+     See: https://github.com/ros2/rviz/tree/ros2 for porting guide -->
+<package format="3">
+  <name>rviz_plugins</name>
+  <version>0.0.0</version>
+  <description>Additional plugins for RViz (NOT COMPATIBLE WITH ROS2)</description>
+  <maintainer email="eeshaojie@todo.todo">Shaojie Shen</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <!-- ROS2 rviz plugins require different API - package disabled -->
 </package>

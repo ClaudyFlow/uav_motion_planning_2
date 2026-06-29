@@ -6,7 +6,8 @@
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/PointCloud2.h>
 
 #include <Eigen/Eigen>
@@ -26,8 +27,10 @@ default_random_engine eng(rd());
 uniform_real_distribution<double> rand_x_, rand_y_, rand_z_, rand_w_, rand_h_,
     rand_inf_, rand_radius1_, rand_radius2_, rand_theta_;
 
-ros::Publisher local_map_pub_, global_map_pub_, click_map_pub_;
-ros::Subscriber odom_sub_, click_sub_;
+// ROS1: ros::Publisher local_map_pub_, global_map_pub_, click_map_pub_;
+rclcpp::Publisher local_map_pub_, global_map_pub_, click_map_pub_;
+// ROS1: ros::Subscriber odom_sub_, click_sub_;
+rclcpp::Subscriber odom_sub_, click_sub_;
 
 vector<double> state_;
 
@@ -466,8 +469,10 @@ void odomCallbck(const nav_msgs::Odometry odom) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "random_forest");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "random_forest");
+  rclcpp::init(argc, argv, "random_forest");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
   // local_map_pub_ = nh.advertise<sensor_msgs::PointCloud2>("local_cloud", 1);
   global_map_pub_ = nh.advertise<sensor_msgs::PointCloud2>("global_cloud", 1);
@@ -476,39 +481,89 @@ int main(int argc, char** argv) {
   // odom_sub_ = nh.subscribe("odom", 10, odomCallbck);
   click_sub_ = nh.subscribe("/move_base_simple/goal", 10, clickCallback);
 
-  nh.param("init_state_x", init_x_, 0.0);
-  nh.param("init_state_y", init_y_, 0.0);
-  nh.param("init_radius", init_radius_, 1.0);
+// ROS1:   nh.param("init_state_x", init_x_, 0.0);
+nh->declare_parameter<init_x_>("init_state_x", 0.0);
+nh->get_parameter("init_state_x", init_x_);
+// ROS1:   nh.param("init_state_y", init_y_, 0.0);
+nh->declare_parameter<init_y_>("init_state_y", 0.0);
+nh->get_parameter("init_state_y", init_y_);
+// ROS1:   nh.param("init_radius", init_radius_, 1.0);
+nh->declare_parameter<init_radius_>("init_radius", 1.0);
+nh->get_parameter("init_radius", init_radius_);
 
-  nh.param("map/x_size", x_size_, 50.0);
-  nh.param("map/y_size", y_size_, 50.0);
-  nh.param("map/resolution", resolution_, 0.1);
+// ROS1:   nh.param("map/x_size", x_size_, 50.0);
+nh->declare_parameter<x_size_>("map/x_size", 50.0);
+nh->get_parameter("map/x_size", x_size_);
+// ROS1:   nh.param("map/y_size", y_size_, 50.0);
+nh->declare_parameter<y_size_>("map/y_size", 50.0);
+nh->get_parameter("map/y_size", y_size_);
+// ROS1:   nh.param("map/resolution", resolution_, 0.1);
+nh->declare_parameter<resolution_>("map/resolution", 0.1);
+nh->get_parameter("map/resolution", resolution_);
 
-  nh.param("map/fix_map_type", fix_map_type_, 0);
+// ROS1:   nh.param("map/fix_map_type", fix_map_type_, 0);
+nh->declare_parameter<fix_map_type_>("map/fix_map_type", 0);
+nh->get_parameter("map/fix_map_type", fix_map_type_);
 
-  nh.param("map/polar_num", polar_num_, 30);
-  nh.param("ObstacleShape/lower_rad", w_l_, 0.3);
-  nh.param("ObstacleShape/upper_rad", w_h_, 0.8);
-  nh.param("ObstacleShape/lower_hei", h_l_, 3.0);
-  nh.param("ObstacleShape/upper_hei", h_h_, 7.0);
-  nh.param("min_distance", min_dist_, 1.0);
+// ROS1:   nh.param("map/polar_num", polar_num_, 30);
+nh->declare_parameter<polar_num_>("map/polar_num", 30);
+nh->get_parameter("map/polar_num", polar_num_);
+// ROS1:   nh.param("ObstacleShape/lower_rad", w_l_, 0.3);
+nh->declare_parameter<w_l_>("ObstacleShape/lower_rad", 0.3);
+nh->get_parameter("ObstacleShape/lower_rad", w_l_);
+// ROS1:   nh.param("ObstacleShape/upper_rad", w_h_, 0.8);
+nh->declare_parameter<w_h_>("ObstacleShape/upper_rad", 0.8);
+nh->get_parameter("ObstacleShape/upper_rad", w_h_);
+// ROS1:   nh.param("ObstacleShape/lower_hei", h_l_, 3.0);
+nh->declare_parameter<h_l_>("ObstacleShape/lower_hei", 3.0);
+nh->get_parameter("ObstacleShape/lower_hei", h_l_);
+// ROS1:   nh.param("ObstacleShape/upper_hei", h_h_, 7.0);
+nh->declare_parameter<h_h_>("ObstacleShape/upper_hei", 7.0);
+nh->get_parameter("ObstacleShape/upper_hei", h_h_);
+// ROS1:   nh.param("min_distance", min_dist_, 1.0);
+nh->declare_parameter<min_dist_>("min_distance", 1.0);
+nh->get_parameter("min_distance", min_dist_);
 
-  nh.param("wall_x", wall_x_, 0.0);
-  nh.param("wall_y", wall_y_, 0.0);
-  nh.param("wall_w", wall_w_, 0.5);
+// ROS1:   nh.param("wall_x", wall_x_, 0.0);
+nh->declare_parameter<wall_x_>("wall_x", 0.0);
+nh->get_parameter("wall_x", wall_x_);
+// ROS1:   nh.param("wall_y", wall_y_, 0.0);
+nh->declare_parameter<wall_y_>("wall_y", 0.0);
+nh->get_parameter("wall_y", wall_y_);
+// ROS1:   nh.param("wall_w", wall_w_, 0.5);
+nh->declare_parameter<wall_w_>("wall_w", 0.5);
+nh->get_parameter("wall_w", wall_w_);
 
-  nh.param("map/circle_num", num_circles_, 30);
-  nh.param("ObstacleShape/radius_l", radius_l_, 7.0);
-  nh.param("ObstacleShape/radius_h", radius_h_, 7.0);
-  nh.param("ObstacleShape/z_l", z_l_, 7.0);
-  nh.param("ObstacleShape/z_h", z_h_, 7.0);
-  nh.param("ObstacleShape/theta", theta_, 7.0);
+// ROS1:   nh.param("map/circle_num", num_circles_, 30);
+nh->declare_parameter<num_circles_>("map/circle_num", 30);
+nh->get_parameter("map/circle_num", num_circles_);
+// ROS1:   nh.param("ObstacleShape/radius_l", radius_l_, 7.0);
+nh->declare_parameter<radius_l_>("ObstacleShape/radius_l", 7.0);
+nh->get_parameter("ObstacleShape/radius_l", radius_l_);
+// ROS1:   nh.param("ObstacleShape/radius_h", radius_h_, 7.0);
+nh->declare_parameter<radius_h_>("ObstacleShape/radius_h", 7.0);
+nh->get_parameter("ObstacleShape/radius_h", radius_h_);
+// ROS1:   nh.param("ObstacleShape/z_l", z_l_, 7.0);
+nh->declare_parameter<z_l_>("ObstacleShape/z_l", 7.0);
+nh->get_parameter("ObstacleShape/z_l", z_l_);
+// ROS1:   nh.param("ObstacleShape/z_h", z_h_, 7.0);
+nh->declare_parameter<z_h_>("ObstacleShape/z_h", 7.0);
+nh->get_parameter("ObstacleShape/z_h", z_h_);
+// ROS1:   nh.param("ObstacleShape/theta", theta_, 7.0);
+nh->declare_parameter<theta_>("ObstacleShape/theta", 7.0);
+nh->get_parameter("ObstacleShape/theta", theta_);
 
-  nh.param("sensing/radius", sensing_range_, 10.0);
-  nh.param("sensing/rate", sense_rate_, 10.0);
+// ROS1:   nh.param("sensing/radius", sensing_range_, 10.0);
+nh->declare_parameter<sensing_range_>("sensing/radius", 10.0);
+nh->get_parameter("sensing/radius", sensing_range_);
+// ROS1:   nh.param("sensing/rate", sense_rate_, 10.0);
+nh->declare_parameter<sense_rate_>("sensing/rate", 10.0);
+nh->get_parameter("sensing/rate", sense_rate_);
 
   int seed;
-  nh.param("map/seed", seed, 0);
+// ROS1:   nh.param("map/seed", seed, 0);
+nh->declare_parameter<seed>("map/seed", 0);
+nh->get_parameter("map/seed", seed);
 
   x_l_ = -x_size_ / 2.0;
   x_h_ = +x_size_ / 2.0;
@@ -519,10 +574,13 @@ int main(int argc, char** argv) {
 
   MapGenerate();
 
-  ros::Rate loop_rate(sense_rate_);
-  while (ros::ok()) {
+// ROS1:   ros::Rate loop_rate(sense_rate_);
+  rclcpp::Rate loop_rate(sense_rate_);
+// ROS1:   while (ros::ok()) {
+  while (rclcpp::ok()) {
     pubSensedPoints();
-    ros::spinOnce();
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
     loop_rate.sleep();
   }
 }

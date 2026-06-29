@@ -1,15 +1,20 @@
 #include <quadrotor_msgs/PositionCommand.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "quad_sim_example");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "quad_sim_example");
+  rclcpp::init(argc, argv, "quad_sim_example");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
-  ros::Publisher cmd_pub =
+// ROS1:   ros::Publisher cmd_pub =
+  rclcpp::Publisher cmd_pub =
       nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 10);
 
   ros::Duration(2.0).sleep();
 
-  while (ros::ok()) {
+// ROS1:   while (ros::ok()) {
+  while (rclcpp::ok()) {
     /*** example 1: position control ***/
     std::cout << "\033[42m"
               << "Position Control to (2,0,1) meters"
@@ -22,7 +27,8 @@ int main(int argc, char** argv) {
       cmd_pub.publish(cmd);
 
       ros::Duration(0.01).sleep();
-      ros::spinOnce();
+// ROS1:       ros::spinOnce();
+      rclcpp::spin_some(nh);
     }
 
     /*** example 2: velocity control ***/
@@ -46,7 +52,8 @@ int main(int argc, char** argv) {
       cmd_pub.publish(cmd);
 
       ros::Duration(0.01).sleep();
-      ros::spinOnce();
+// ROS1:       ros::spinOnce();
+      rclcpp::spin_some(nh);
     }
 
     /*** example 3: accelleration control ***/
@@ -79,7 +86,8 @@ int main(int argc, char** argv) {
       cmd_pub.publish(cmd);
 
       ros::Duration(0.01).sleep();
-      ros::spinOnce();
+// ROS1:       ros::spinOnce();
+      rclcpp::spin_some(nh);
     }
   }
 

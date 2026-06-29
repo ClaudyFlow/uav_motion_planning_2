@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include_header
 #include "path_searching/rrt_star.hh"
 #pragma endregion include_header
@@ -15,16 +16,28 @@
 
 namespace path_searching {
 
-void RRTStar::setParam(ros::NodeHandle& nh) {
-  nh.param("rrt_star/max_tree_node_num", max_tree_node_num_, 100000);
-  nh.param("rrt_star/step_length", step_length_, 0.5);
-  nh.param("rrt_star/search_radius", search_radius_, 0.5);
-  nh.param("rrt_star/collision_check_resolution", resolution_, 0.05);
-  nh.param("rrt_star/max_tolerance_time", max_tolerance_time_, 2.0);
+// ROS1: void RRTStar::setParam(ros::NodeHandle& nh) {
+void RRTStar::setParam(rclcpp::Node::SharedPtr nh) {
+// ROS1:   nh.param("rrt_star/max_tree_node_num", max_tree_node_num_, 100000);
+nh->declare_parameter<max_tree_node_num_>("rrt_star/max_tree_node_num", 100000);
+nh->get_parameter("rrt_star/max_tree_node_num", max_tree_node_num_);
+// ROS1:   nh.param("rrt_star/step_length", step_length_, 0.5);
+nh->declare_parameter<step_length_>("rrt_star/step_length", 0.5);
+nh->get_parameter("rrt_star/step_length", step_length_);
+// ROS1:   nh.param("rrt_star/search_radius", search_radius_, 0.5);
+nh->declare_parameter<search_radius_>("rrt_star/search_radius", 0.5);
+nh->get_parameter("rrt_star/search_radius", search_radius_);
+// ROS1:   nh.param("rrt_star/collision_check_resolution", resolution_, 0.05);
+nh->declare_parameter<resolution_>("rrt_star/collision_check_resolution", 0.05);
+nh->get_parameter("rrt_star/collision_check_resolution", resolution_);
+// ROS1:   nh.param("rrt_star/max_tolerance_time", max_tolerance_time_, 2.0);
+nh->declare_parameter<max_tolerance_time_>("rrt_star/max_tolerance_time", 2.0);
+nh->get_parameter("rrt_star/max_tolerance_time", max_tolerance_time_);
 
   vis_path_pub_ = nh.advertise<visualization_msgs::Marker>("rrt_star/path", 1);
   vis_path_marker_.header.frame_id = "world";
-  vis_path_marker_.header.stamp = ros::Time::now();
+// ROS1:   vis_path_marker_.header.stamp = ros::Time::now();
+  vis_path_marker_.header.stamp = rclcpp::Clock().now();
   vis_path_marker_.ns = "rrt_star";
   vis_path_marker_.type = visualization_msgs::Marker::LINE_STRIP;
   vis_path_marker_.action = visualization_msgs::Marker::ADD;
@@ -40,7 +53,8 @@ void RRTStar::setParam(ros::NodeHandle& nh) {
   vis_waypoints_pub_ =
       nh.advertise<visualization_msgs::Marker>("rrt_star/waypoints", 1);
   vis_waypoints_marker_.header.frame_id = "world";
-  vis_waypoints_marker_.header.stamp = ros::Time::now();
+// ROS1:   vis_waypoints_marker_.header.stamp = ros::Time::now();
+  vis_waypoints_marker_.header.stamp = rclcpp::Clock().now();
   vis_waypoints_marker_.ns = "rrt_star";
   vis_waypoints_marker_.type = visualization_msgs::Marker::SPHERE_LIST;
   vis_waypoints_marker_.action = visualization_msgs::Marker::ADD;
@@ -55,7 +69,8 @@ void RRTStar::setParam(ros::NodeHandle& nh) {
 
   vis_tree_pub_ = nh.advertise<visualization_msgs::Marker>("rrt_star/tree", 10);
   vis_tree_marker_.header.frame_id = "world";
-  vis_tree_marker_.header.stamp = ros::Time::now();
+// ROS1:   vis_tree_marker_.header.stamp = ros::Time::now();
+  vis_tree_marker_.header.stamp = rclcpp::Clock().now();
   vis_tree_marker_.ns = "rrt_star";
   vis_tree_marker_.type = visualization_msgs::Marker::LINE_LIST;
   vis_tree_marker_.action = visualization_msgs::Marker::ADD;
@@ -299,7 +314,8 @@ std::vector<Eigen::Vector3d> RRTStar::getOptimalPath() { return optimal_path_; }
 
 int RRTStar::search(Eigen::Vector3d start, Eigen::Vector3d end,
                     std::vector<Eigen::Vector3d>& path) {
-  ros::Time start_time = ros::Time::now();
+// ROS1:   ros::Time start_time = ros::Time::now();
+  ros::Time start_time = rclcpp::Clock().now();
   RRTStarNode* start_node = path_node_pool_[use_node_num_];
   start_node->position = start;
   start_node->g_cost = 0.0;
@@ -338,7 +354,8 @@ int RRTStar::search(Eigen::Vector3d start, Eigen::Vector3d end,
         if ((new_node->position - end).norm() <= search_radius_) {
           if (isCollisionFree(new_node->position, end, resolution_)) {
             if (reach_goal_ == false) {
-              ros::Time first_end_time = ros::Time::now();
+// ROS1:               ros::Time first_end_time = ros::Time::now();
+              ros::Time first_end_time = rclcpp::Clock().now();
               reach_goal_ = true;
               std::cout << "first reach goal!" << std::endl;
               std::cout << "first reach goal time: "
@@ -390,7 +407,8 @@ int RRTStar::search(Eigen::Vector3d start, Eigen::Vector3d end,
             getWholeTree(vertices, edges);
             visWholeTree(vertices, edges);
           }
-          ros::Time end_time = ros::Time::now();
+// ROS1:           ros::Time end_time = ros::Time::now();
+          ros::Time end_time = rclcpp::Clock().now();
           if ((end_time - start_time).toSec() >= max_tolerance_time_) {
             std::cout
                 << "reach max tolerance time, find asymptotic Optimal path!"

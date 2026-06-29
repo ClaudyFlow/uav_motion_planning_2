@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include::project
 #include "path_searching/kino_astar.hh"
 #pragma endregion include::project
@@ -11,8 +12,10 @@
 #pragma endregion include
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "test_kino_astar_node");
-  ros::NodeHandle nh;
+// ROS1:   ros::init(argc, argv, "test_kino_astar_node");
+  rclcpp::init(argc, argv, "test_kino_astar_node");
+// ROS1:   ros::NodeHandle nh;
+  rclcpp::Node::SharedPtr nh;
 
   GridMap::Ptr grid_map = std::make_shared<GridMap>();
   grid_map->initMap(nh);
@@ -37,7 +40,8 @@ int main(int argc, char** argv) {
     std::cout << "Point " << i << ": " << path[i].transpose() << std::endl;
   };
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
 
   return 0;
 }

@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include::project
 #include "path_searching/kino_astar.hh"
 #pragma endregion include::project
@@ -12,10 +13,13 @@
 
 path_searching::KinoAStar::Ptr kino_astar_;
 
-ros::Subscriber goal_sub;
-ros::Subscriber odom_sub;
+// ROS1: ros::Subscriber goal_sub;
+rclcpp::Subscriber goal_sub;
+// ROS1: ros::Subscriber odom_sub;
+rclcpp::Subscriber odom_sub;
 
-ros::Publisher path_pub;
+// ROS1: ros::Publisher path_pub;
+rclcpp::Publisher path_pub;
 
 nav_msgs::Odometry::ConstPtr odom_;
 std::vector<Eigen::Vector3d> path;
@@ -40,7 +44,8 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
   if (success == 1) {
     visualization_msgs::Marker path_marker;
     path_marker.header.frame_id = "world";
-    path_marker.header.stamp = ros::Time::now();
+// ROS1:     path_marker.header.stamp = ros::Time::now();
+    path_marker.header.stamp = rclcpp::Clock().now();
 
     path_marker.ns = "kino_astar/path";
     path_marker.id = 0;
@@ -75,12 +80,16 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "test_kino_astar_searching");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "test_kino_astar_searching");
+  rclcpp::init(argc, argv, "test_kino_astar_searching");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
-  ros::Subscriber goal_sub =
+// ROS1:   ros::Subscriber goal_sub =
+  rclcpp::Subscriber goal_sub =
       nh.subscribe<geometry_msgs::PoseStamped>("/goal", 10, &GoalCallback);
-  ros::Subscriber odom_sub =
+// ROS1:   ros::Subscriber odom_sub =
+  rclcpp::Subscriber odom_sub =
       nh.subscribe<nav_msgs::Odometry>("/visual_slam/odom", 10, &OdomCallback);
 
   path_pub = nh.advertise<visualization_msgs::Marker>("kino_astar/path", 10);
@@ -94,6 +103,7 @@ int main(int argc, char** argv) {
   kino_astar_->setGridMap(grid_map);
   kino_astar_->init();
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

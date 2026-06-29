@@ -1,9 +1,11 @@
 #include <nav_msgs/Odometry.h>
-#include <nodelet/nodelet.h>
+// ROS1: #include <nodelet/nodelet.h>
+// ROS2: No nodelet support - convert to component node
 #include <quadrotor_msgs/Corrections.h>
 #include <quadrotor_msgs/PositionCommand.h>
 #include <quadrotor_msgs/SO3Command.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/Imu.h>
 #include <so3_control/SO3Control.h>
 #include <std_msgs/Bool.h>
@@ -36,12 +38,18 @@ class SO3ControlNodelet : public nodelet::Nodelet {
   void imu_callback(const sensor_msgs::Imu& imu);
 
   SO3Control controller_;
-  ros::Publisher so3_command_pub_;
-  ros::Subscriber odom_sub_;
-  ros::Subscriber position_cmd_sub_;
-  ros::Subscriber enable_motors_sub_;
-  ros::Subscriber corrections_sub_;
-  ros::Subscriber imu_sub_;
+// ROS1:   ros::Publisher so3_command_pub_;
+  rclcpp::Publisher so3_command_pub_;
+// ROS1:   ros::Subscriber odom_sub_;
+  rclcpp::Subscriber odom_sub_;
+// ROS1:   ros::Subscriber position_cmd_sub_;
+  rclcpp::Subscriber position_cmd_sub_;
+// ROS1:   ros::Subscriber enable_motors_sub_;
+  rclcpp::Subscriber enable_motors_sub_;
+// ROS1:   ros::Subscriber corrections_sub_;
+  rclcpp::Subscriber corrections_sub_;
+// ROS1:   ros::Subscriber imu_sub_;
+  rclcpp::Subscriber imu_sub_;
 
   bool position_cmd_updated_, position_cmd_init_;
   std::string frame_id_;
@@ -64,7 +72,8 @@ void SO3ControlNodelet::publishSO3Command() {
 
   quadrotor_msgs::SO3Command::Ptr so3_command(
       new quadrotor_msgs::SO3Command);  //! @note memory leak?
-  so3_command->header.stamp = ros::Time::now();
+// ROS1:   so3_command->header.stamp = ros::Time::now();
+  so3_command->header.stamp = rclcpp::Clock().now();
   so3_command->header.frame_id = frame_id_;
   so3_command->force.x = force(0);
   so3_command->force.y = force(1);
@@ -117,6 +126,7 @@ void SO3ControlNodelet::odom_callback(
                                  odom->twist.twist.linear.y,
                                  odom->twist.twist.linear.z);
 
+// ROS1:   current_yaw_ = tf::getYaw(odom->pose.pose.orientation);
   current_yaw_ = tf::getYaw(odom->pose.pose.orientation);
 
   controller_.setPosition(position);
@@ -164,54 +174,102 @@ void SO3ControlNodelet::imu_callback(const sensor_msgs::Imu& imu) {
 }
 
 void SO3ControlNodelet::onInit() {
-  ros::NodeHandle nh(getPrivateNodeHandle());
+// ROS1:   ros::NodeHandle nh(getPrivateNodeHandle());
+  rclcpp::Node::SharedPtr nh(getPrivateNodeHandle());
 
   std::string quadrotor_name;
-  nh.param("quadrotor_name", quadrotor_name, std::string("quadrotor"));
+// ROS1:   nh.param("quadrotor_name", quadrotor_name, std::string("quadrotor"));
+nh->declare_parameter<quadrotor_name>("quadrotor_name", std::string("quadrotor");
+nh->get_parameter("quadrotor_name", quadrotor_name);
   frame_id_ = "/" + quadrotor_name;
 
   double mass;
-  nh.param("mass", mass, 0.5);
+// ROS1:   nh.param("mass", mass, 0.5);
+nh->declare_parameter<mass>("mass", 0.5);
+nh->get_parameter("mass", mass);
   controller_.setMass(mass);
 
-  nh.param("use_external_yaw", use_external_yaw_, true);
+// ROS1:   nh.param("use_external_yaw", use_external_yaw_, true);
+nh->declare_parameter<use_external_yaw_>("use_external_yaw", true);
+nh->get_parameter("use_external_yaw", use_external_yaw_);
 
-  nh.param("gains/rot/x", kR_[0], 1.5);
-  nh.param("gains/rot/y", kR_[1], 1.5);
-  nh.param("gains/rot/z", kR_[2], 1.0);
-  nh.param("gains/ang/x", kOm_[0], 0.13);
-  nh.param("gains/ang/y", kOm_[1], 0.13);
-  nh.param("gains/ang/z", kOm_[2], 0.1);
-  nh.param("gains/kx/x", kx_[0], 5.7);
-  nh.param("gains/kx/y", kx_[1], 5.7);
-  nh.param("gains/kx/z", kx_[2], 6.2);
-  nh.param("gains/kv/x", kv_[0], 3.4);
-  nh.param("gains/kv/y", kv_[1], 3.4);
-  nh.param("gains/kv/z", kv_[2], 4.0);
+// ROS1:   nh.param("gains/rot/x", kR_[0], 1.5);
+nh->declare_parameter<kR_>("gains/rot/x", [0], 1.5);
+nh->get_parameter("gains/rot/x", kR_);
+// ROS1:   nh.param("gains/rot/y", kR_[1], 1.5);
+nh->declare_parameter<kR_>("gains/rot/y", [1], 1.5);
+nh->get_parameter("gains/rot/y", kR_);
+// ROS1:   nh.param("gains/rot/z", kR_[2], 1.0);
+nh->declare_parameter<kR_>("gains/rot/z", [2], 1.0);
+nh->get_parameter("gains/rot/z", kR_);
+// ROS1:   nh.param("gains/ang/x", kOm_[0], 0.13);
+nh->declare_parameter<kOm_>("gains/ang/x", [0], 0.13);
+nh->get_parameter("gains/ang/x", kOm_);
+// ROS1:   nh.param("gains/ang/y", kOm_[1], 0.13);
+nh->declare_parameter<kOm_>("gains/ang/y", [1], 0.13);
+nh->get_parameter("gains/ang/y", kOm_);
+// ROS1:   nh.param("gains/ang/z", kOm_[2], 0.1);
+nh->declare_parameter<kOm_>("gains/ang/z", [2], 0.1);
+nh->get_parameter("gains/ang/z", kOm_);
+// ROS1:   nh.param("gains/kx/x", kx_[0], 5.7);
+nh->declare_parameter<kx_>("gains/kx/x", [0], 5.7);
+nh->get_parameter("gains/kx/x", kx_);
+// ROS1:   nh.param("gains/kx/y", kx_[1], 5.7);
+nh->declare_parameter<kx_>("gains/kx/y", [1], 5.7);
+nh->get_parameter("gains/kx/y", kx_);
+// ROS1:   nh.param("gains/kx/z", kx_[2], 6.2);
+nh->declare_parameter<kx_>("gains/kx/z", [2], 6.2);
+nh->get_parameter("gains/kx/z", kx_);
+// ROS1:   nh.param("gains/kv/x", kv_[0], 3.4);
+nh->declare_parameter<kv_>("gains/kv/x", [0], 3.4);
+nh->get_parameter("gains/kv/x", kv_);
+// ROS1:   nh.param("gains/kv/y", kv_[1], 3.4);
+nh->declare_parameter<kv_>("gains/kv/y", [1], 3.4);
+nh->get_parameter("gains/kv/y", kv_);
+// ROS1:   nh.param("gains/kv/z", kv_[2], 4.0);
+nh->declare_parameter<kv_>("gains/kv/z", [2], 4.0);
+nh->get_parameter("gains/kv/z", kv_);
 
-  nh.param("corrections/z", corrections_[0], 0.0);
-  nh.param("corrections/r", corrections_[1], 0.0);
-  nh.param("corrections/p", corrections_[2], 0.0);
+// ROS1:   nh.param("corrections/z", corrections_[0], 0.0);
+nh->declare_parameter<corrections_>("corrections/z", [0], 0.0);
+nh->get_parameter("corrections/z", corrections_);
+// ROS1:   nh.param("corrections/r", corrections_[1], 0.0);
+nh->declare_parameter<corrections_>("corrections/r", [1], 0.0);
+nh->get_parameter("corrections/r", corrections_);
+// ROS1:   nh.param("corrections/p", corrections_[2], 0.0);
+nh->declare_parameter<corrections_>("corrections/p", [2], 0.0);
+nh->get_parameter("corrections/p", corrections_);
 
-  nh.param("so3_control/init_state_x", init_x_, 0.0);
-  nh.param("so3_control/init_state_y", init_y_, 0.0);
-  nh.param("so3_control/init_state_z", init_z_, -10000.0);
+// ROS1:   nh.param("so3_control/init_state_x", init_x_, 0.0);
+nh->declare_parameter<init_x_>("so3_control/init_state_x", 0.0);
+nh->get_parameter("so3_control/init_state_x", init_x_);
+// ROS1:   nh.param("so3_control/init_state_y", init_y_, 0.0);
+nh->declare_parameter<init_y_>("so3_control/init_state_y", 0.0);
+nh->get_parameter("so3_control/init_state_y", init_y_);
+// ROS1:   nh.param("so3_control/init_state_z", init_z_, -10000.0);
+nh->declare_parameter<init_z_>("so3_control/init_state_z", -10000.0);
+nh->get_parameter("so3_control/init_state_z", init_z_);
 
   so3_command_pub_ = nh.advertise<quadrotor_msgs::SO3Command>("so3_cmd", 10);
 
   odom_sub_ = nh.subscribe("odom", 10, &SO3ControlNodelet::odom_callback, this,
-                           ros::TransportHints().tcpNoDelay());
+// ROS1:                            ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
   position_cmd_sub_ = nh.subscribe("position_cmd", 10,
                                    &SO3ControlNodelet::position_cmd_callback,
-                                   this, ros::TransportHints().tcpNoDelay());
+// ROS1:                                    this, ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
   enable_motors_sub_ =
       nh.subscribe("motors", 2, &SO3ControlNodelet::enable_motors_callback,
-                   this, ros::TransportHints().tcpNoDelay());
+// ROS1:                    this, ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
   corrections_sub_ =
       nh.subscribe("corrections", 10, &SO3ControlNodelet::corrections_callback,
-                   this, ros::TransportHints().tcpNoDelay());
+// ROS1:                    this, ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
   imu_sub_ = nh.subscribe("imu", 10, &SO3ControlNodelet::imu_callback, this,
-                          ros::TransportHints().tcpNoDelay());
+// ROS1:                           ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
 }
 
 #include <pluginlib/class_list_macros.h>

@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include::header
 #include "plan_env/sdf_map.hh"
 #pragma endregion include::header
@@ -16,56 +17,126 @@
 // #define current_img_ md_.depth_image_[image_cnt_ & 1]
 // #define last_img_ md_.depth_image_[!(image_cnt_ & 1)]
 
-void SDFMap::initMap(ros::NodeHandle& nh) {
+// ROS1: void SDFMap::initMap(ros::NodeHandle& nh) {
+void SDFMap::initMap(rclcpp::Node::SharedPtr nh) {
   node_ = nh;
 
   /* get parameter */
   double x_size, y_size, z_size;
-  node_.param("sdf_map/resolution", mp_.resolution_, -1.0);
-  node_.param("sdf_map/map_size_x", x_size, -1.0);
-  node_.param("sdf_map/map_size_y", y_size, -1.0);
-  node_.param("sdf_map/map_size_z", z_size, -1.0);
-  node_.param("sdf_map/local_update_range_x", mp_.local_update_range_(0), -1.0);
-  node_.param("sdf_map/local_update_range_y", mp_.local_update_range_(1), -1.0);
-  node_.param("sdf_map/local_update_range_z", mp_.local_update_range_(2), -1.0);
-  node_.param("sdf_map/obstacles_inflation", mp_.obstacles_inflation_, -1.0);
+// ROS1:   node_.param("sdf_map/resolution", mp_.resolution_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/resolution", .resolution_, -1.0);
+node_->get_parameter("sdf_map/resolution", mp_);
+// ROS1:   node_.param("sdf_map/map_size_x", x_size, -1.0);
+node_->declare_parameter<x_size>("sdf_map/map_size_x", -1.0);
+node_->get_parameter("sdf_map/map_size_x", x_size);
+// ROS1:   node_.param("sdf_map/map_size_y", y_size, -1.0);
+node_->declare_parameter<y_size>("sdf_map/map_size_y", -1.0);
+node_->get_parameter("sdf_map/map_size_y", y_size);
+// ROS1:   node_.param("sdf_map/map_size_z", z_size, -1.0);
+node_->declare_parameter<z_size>("sdf_map/map_size_z", -1.0);
+node_->get_parameter("sdf_map/map_size_z", z_size);
+// ROS1:   node_.param("sdf_map/local_update_range_x", mp_.local_update_range_(0), -1.0);
+node_->declare_parameter<mp_>("sdf_map/local_update_range_x", .local_update_range_(0);
+node_->get_parameter("sdf_map/local_update_range_x", mp_);
+// ROS1:   node_.param("sdf_map/local_update_range_y", mp_.local_update_range_(1), -1.0);
+node_->declare_parameter<mp_>("sdf_map/local_update_range_y", .local_update_range_(1);
+node_->get_parameter("sdf_map/local_update_range_y", mp_);
+// ROS1:   node_.param("sdf_map/local_update_range_z", mp_.local_update_range_(2), -1.0);
+node_->declare_parameter<mp_>("sdf_map/local_update_range_z", .local_update_range_(2);
+node_->get_parameter("sdf_map/local_update_range_z", mp_);
+// ROS1:   node_.param("sdf_map/obstacles_inflation", mp_.obstacles_inflation_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/obstacles_inflation", .obstacles_inflation_, -1.0);
+node_->get_parameter("sdf_map/obstacles_inflation", mp_);
 
-  node_.param("sdf_map/fx", mp_.fx_, -1.0);
-  node_.param("sdf_map/fy", mp_.fy_, -1.0);
-  node_.param("sdf_map/cx", mp_.cx_, -1.0);
-  node_.param("sdf_map/cy", mp_.cy_, -1.0);
+// ROS1:   node_.param("sdf_map/fx", mp_.fx_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/fx", .fx_, -1.0);
+node_->get_parameter("sdf_map/fx", mp_);
+// ROS1:   node_.param("sdf_map/fy", mp_.fy_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/fy", .fy_, -1.0);
+node_->get_parameter("sdf_map/fy", mp_);
+// ROS1:   node_.param("sdf_map/cx", mp_.cx_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/cx", .cx_, -1.0);
+node_->get_parameter("sdf_map/cx", mp_);
+// ROS1:   node_.param("sdf_map/cy", mp_.cy_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/cy", .cy_, -1.0);
+node_->get_parameter("sdf_map/cy", mp_);
 
-  node_.param("sdf_map/use_depth_filter", mp_.use_depth_filter_, true);
+// ROS1:   node_.param("sdf_map/use_depth_filter", mp_.use_depth_filter_, true);
+node_->declare_parameter<mp_>("sdf_map/use_depth_filter", .use_depth_filter_, true);
+node_->get_parameter("sdf_map/use_depth_filter", mp_);
+// ROS1:   node_.param("sdf_map/depth_filter_tolerance", mp_.depth_filter_tolerance_,
   node_.param("sdf_map/depth_filter_tolerance", mp_.depth_filter_tolerance_,
               -1.0);
-  node_.param("sdf_map/depth_filter_maxdist", mp_.depth_filter_maxdist_, -1.0);
-  node_.param("sdf_map/depth_filter_mindist", mp_.depth_filter_mindist_, -1.0);
-  node_.param("sdf_map/depth_filter_margin", mp_.depth_filter_margin_, -1);
+// ROS1:   node_.param("sdf_map/depth_filter_maxdist", mp_.depth_filter_maxdist_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/depth_filter_maxdist", .depth_filter_maxdist_, -1.0);
+node_->get_parameter("sdf_map/depth_filter_maxdist", mp_);
+// ROS1:   node_.param("sdf_map/depth_filter_mindist", mp_.depth_filter_mindist_, -1.0);
+node_->declare_parameter<mp_>("sdf_map/depth_filter_mindist", .depth_filter_mindist_, -1.0);
+node_->get_parameter("sdf_map/depth_filter_mindist", mp_);
+// ROS1:   node_.param("sdf_map/depth_filter_margin", mp_.depth_filter_margin_, -1);
+node_->declare_parameter<mp_>("sdf_map/depth_filter_margin", .depth_filter_margin_, -1);
+node_->get_parameter("sdf_map/depth_filter_margin", mp_);
+// ROS1:   node_.param("sdf_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_,
   node_.param("sdf_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_,
               -1.0);
-  node_.param("sdf_map/skip_pixel", mp_.skip_pixel_, -1);
+// ROS1:   node_.param("sdf_map/skip_pixel", mp_.skip_pixel_, -1);
+node_->declare_parameter<mp_>("sdf_map/skip_pixel", .skip_pixel_, -1);
+node_->get_parameter("sdf_map/skip_pixel", mp_);
 
-  node_.param("sdf_map/p_hit", mp_.p_hit_, 0.70);
-  node_.param("sdf_map/p_miss", mp_.p_miss_, 0.35);
-  node_.param("sdf_map/p_min", mp_.p_min_, 0.12);
-  node_.param("sdf_map/p_max", mp_.p_max_, 0.97);
-  node_.param("sdf_map/p_occ", mp_.p_occ_, 0.80);
-  node_.param("sdf_map/min_ray_length", mp_.min_ray_length_, -0.1);
-  node_.param("sdf_map/max_ray_length", mp_.max_ray_length_, -0.1);
+// ROS1:   node_.param("sdf_map/p_hit", mp_.p_hit_, 0.70);
+node_->declare_parameter<mp_>("sdf_map/p_hit", .p_hit_, 0.70);
+node_->get_parameter("sdf_map/p_hit", mp_);
+// ROS1:   node_.param("sdf_map/p_miss", mp_.p_miss_, 0.35);
+node_->declare_parameter<mp_>("sdf_map/p_miss", .p_miss_, 0.35);
+node_->get_parameter("sdf_map/p_miss", mp_);
+// ROS1:   node_.param("sdf_map/p_min", mp_.p_min_, 0.12);
+node_->declare_parameter<mp_>("sdf_map/p_min", .p_min_, 0.12);
+node_->get_parameter("sdf_map/p_min", mp_);
+// ROS1:   node_.param("sdf_map/p_max", mp_.p_max_, 0.97);
+node_->declare_parameter<mp_>("sdf_map/p_max", .p_max_, 0.97);
+node_->get_parameter("sdf_map/p_max", mp_);
+// ROS1:   node_.param("sdf_map/p_occ", mp_.p_occ_, 0.80);
+node_->declare_parameter<mp_>("sdf_map/p_occ", .p_occ_, 0.80);
+node_->get_parameter("sdf_map/p_occ", mp_);
+// ROS1:   node_.param("sdf_map/min_ray_length", mp_.min_ray_length_, -0.1);
+node_->declare_parameter<mp_>("sdf_map/min_ray_length", .min_ray_length_, -0.1);
+node_->get_parameter("sdf_map/min_ray_length", mp_);
+// ROS1:   node_.param("sdf_map/max_ray_length", mp_.max_ray_length_, -0.1);
+node_->declare_parameter<mp_>("sdf_map/max_ray_length", .max_ray_length_, -0.1);
+node_->get_parameter("sdf_map/max_ray_length", mp_);
 
-  node_.param("sdf_map/esdf_slice_height", mp_.esdf_slice_height_, -0.1);
+// ROS1:   node_.param("sdf_map/esdf_slice_height", mp_.esdf_slice_height_, -0.1);
+node_->declare_parameter<mp_>("sdf_map/esdf_slice_height", .esdf_slice_height_, -0.1);
+node_->get_parameter("sdf_map/esdf_slice_height", mp_);
+// ROS1:   node_.param("sdf_map/visualization_truncate_height",
   node_.param("sdf_map/visualization_truncate_height",
               mp_.visualization_truncate_height_, -0.1);
-  node_.param("sdf_map/virtual_ceil_height", mp_.virtual_ceil_height_, -0.1);
+// ROS1:   node_.param("sdf_map/virtual_ceil_height", mp_.virtual_ceil_height_, -0.1);
+node_->declare_parameter<mp_>("sdf_map/virtual_ceil_height", .virtual_ceil_height_, -0.1);
+node_->get_parameter("sdf_map/virtual_ceil_height", mp_);
 
-  node_.param("sdf_map/show_occ_time", mp_.show_occ_time_, false);
-  node_.param("sdf_map/show_esdf_time", mp_.show_esdf_time_, false);
-  node_.param("sdf_map/pose_type", mp_.pose_type_, 1);
+// ROS1:   node_.param("sdf_map/show_occ_time", mp_.show_occ_time_, false);
+node_->declare_parameter<mp_>("sdf_map/show_occ_time", .show_occ_time_, false);
+node_->get_parameter("sdf_map/show_occ_time", mp_);
+// ROS1:   node_.param("sdf_map/show_esdf_time", mp_.show_esdf_time_, false);
+node_->declare_parameter<mp_>("sdf_map/show_esdf_time", .show_esdf_time_, false);
+node_->get_parameter("sdf_map/show_esdf_time", mp_);
+// ROS1:   node_.param("sdf_map/pose_type", mp_.pose_type_, 1);
+node_->declare_parameter<mp_>("sdf_map/pose_type", .pose_type_, 1);
+node_->get_parameter("sdf_map/pose_type", mp_);
 
-  node_.param("sdf_map/frame_id", mp_.frame_id_, string("world"));
-  node_.param("sdf_map/local_bound_inflate", mp_.local_bound_inflate_, 1.0);
-  node_.param("sdf_map/local_map_margin", mp_.local_map_margin_, 1);
-  node_.param("sdf_map/ground_height", mp_.ground_height_, 1.0);
+// ROS1:   node_.param("sdf_map/frame_id", mp_.frame_id_, string("world"));
+node_->declare_parameter<mp_>("sdf_map/frame_id", .frame_id_, string("world");
+node_->get_parameter("sdf_map/frame_id", mp_);
+// ROS1:   node_.param("sdf_map/local_bound_inflate", mp_.local_bound_inflate_, 1.0);
+node_->declare_parameter<mp_>("sdf_map/local_bound_inflate", .local_bound_inflate_, 1.0);
+node_->get_parameter("sdf_map/local_bound_inflate", mp_);
+// ROS1:   node_.param("sdf_map/local_map_margin", mp_.local_map_margin_, 1);
+node_->declare_parameter<mp_>("sdf_map/local_map_margin", .local_map_margin_, 1);
+node_->get_parameter("sdf_map/local_map_margin", mp_);
+// ROS1:   node_.param("sdf_map/ground_height", mp_.ground_height_, 1.0);
+node_->declare_parameter<mp_>("sdf_map/ground_height", .ground_height_, 1.0);
+node_->get_parameter("sdf_map/ground_height", mp_);
 
   mp_.local_bound_inflate_ = max(mp_.resolution_, mp_.local_bound_inflate_);
   mp_.resolution_inv_ = 1 / mp_.resolution_;
@@ -123,24 +194,29 @@ void SDFMap::initMap(ros::NodeHandle& nh) {
 
   /* init callback */
 
+// ROS1:   depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(
   depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(
       node_, "/sdf_map/depth", 50));
 
   if (mp_.pose_type_ == POSE_STAMPED) {
+// ROS1:     pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::PoseStamped>(
     pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::PoseStamped>(
         node_, "/sdf_map/pose", 25));
 
     sync_image_pose_.reset(
+// ROS1:         new message_filters::Synchronizer<SyncPolicyImagePose>(
         new message_filters::Synchronizer<SyncPolicyImagePose>(
             SyncPolicyImagePose(100), *depth_sub_, *pose_sub_));
     sync_image_pose_->registerCallback(
         boost::bind(&SDFMap::depthPoseCallback, this, _1, _2));
 
   } else if (mp_.pose_type_ == ODOMETRY) {
+// ROS1:     odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(
     odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(
         node_, "/sdf_map/odom", 100));
 
     sync_image_odom_.reset(
+// ROS1:         new message_filters::Synchronizer<SyncPolicyImageOdom>(
         new message_filters::Synchronizer<SyncPolicyImageOdom>(
             SyncPolicyImageOdom(100), *depth_sub_, *odom_sub_));
     sync_image_odom_->registerCallback(
@@ -793,7 +869,8 @@ void SDFMap::clearAndInflateLocalMap() {
   }
 }
 
-void SDFMap::visCallback(const ros::TimerEvent& /*event*/) {
+// ROS1: void SDFMap::visCallback(const ros::TimerEvent& /*event*/) {
+void SDFMap::visCallback(const rclcpp::TimerEvent& /*event*/) {
   publishMap();
   publishMapInflate(false);
   // publishUpdateRange();
@@ -803,19 +880,22 @@ void SDFMap::visCallback(const ros::TimerEvent& /*event*/) {
   // publishDepth();
 }
 
-void SDFMap::updateOccupancyCallback(const ros::TimerEvent& /*event*/) {
+// ROS1: void SDFMap::updateOccupancyCallback(const ros::TimerEvent& /*event*/) {
+void SDFMap::updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/) {
   if (!md_.occ_need_update_) return;
 
   /* update occupancy */
   ros::Time t1, t2;
-  t1 = ros::Time::now();
+// ROS1:   t1 = ros::Time::now();
+  t1 = rclcpp::Clock().now();
 
   projectDepthImage();
   raycastProcess();
 
   if (md_.local_updated_) clearAndInflateLocalMap();
 
-  t2 = ros::Time::now();
+// ROS1:   t2 = ros::Time::now();
+  t2 = rclcpp::Clock().now();
 
   md_.fuse_time_ += (t2 - t1).toSec();
   md_.max_fuse_time_ = max(md_.max_fuse_time_, (t2 - t1).toSec());
@@ -829,16 +909,19 @@ void SDFMap::updateOccupancyCallback(const ros::TimerEvent& /*event*/) {
   md_.local_updated_ = false;
 }
 
-void SDFMap::updateESDFCallback(const ros::TimerEvent& /*event*/) {
+// ROS1: void SDFMap::updateESDFCallback(const ros::TimerEvent& /*event*/) {
+void SDFMap::updateESDFCallback(const rclcpp::TimerEvent& /*event*/) {
   if (!md_.esdf_need_update_) return;
 
   /* esdf */
   ros::Time t1, t2;
-  t1 = ros::Time::now();
+// ROS1:   t1 = ros::Time::now();
+  t1 = rclcpp::Clock().now();
 
   updateESDF3d();
 
-  t2 = ros::Time::now();
+// ROS1:   t2 = ros::Time::now();
+  t2 = rclcpp::Clock().now();
 
   md_.esdf_time_ += (t2 - t1).toSec();
   md_.max_esdf_time_ = max(md_.max_esdf_time_, (t2 - t1).toSec());
@@ -1178,7 +1261,8 @@ void SDFMap::publishUpdateRange() {
   cube_pos = 0.5 * (esdf_min_pos + esdf_max_pos);
   cube_scale = esdf_max_pos - esdf_min_pos;
   mk.header.frame_id = mp_.frame_id_;
-  mk.header.stamp = ros::Time::now();
+// ROS1:   mk.header.stamp = ros::Time::now();
+  mk.header.stamp = rclcpp::Clock().now();
   mk.type = visualization_msgs::Marker::CUBE;
   mk.action = visualization_msgs::Marker::ADD;
   mk.id = 0;

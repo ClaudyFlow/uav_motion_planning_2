@@ -1,7 +1,8 @@
 #include <nav_msgs/Odometry.h>
 #include <quadrotor_msgs/PolynomialTrajectory.h>
 #include <quadrotor_msgs/PositionCommand.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <Eigen/Eigen>
 #include "traj_utils/poly_traj.hpp"
@@ -17,11 +18,15 @@ quadrotor_msgs::PositionCommand cmd_;
 
 ros::Time start_time_;
 
-ros::Timer cmd_timer_;
-ros::Subscriber traj_sub_, odom_sub_;
-ros::Publisher cmd_pub_;
+// ROS1: ros::Timer cmd_timer_;
+rclcpp::Timer cmd_timer_;
+// ROS1: ros::Subscriber traj_sub_, odom_sub_;
+rclcpp::Subscriber traj_sub_, odom_sub_;
+// ROS1: ros::Publisher cmd_pub_;
+rclcpp::Publisher cmd_pub_;
 
-void cmdPubCallback(const ros::TimerEvent& event) {
+// ROS1: void cmdPubCallback(const ros::TimerEvent& event) {
+void cmdPubCallback(const rclcpp::TimerEvent& event) {
   if (!has_trajectory_) return;
 
   cmd_.header.frame_id = "world";
@@ -78,8 +83,10 @@ void trajCallback(const quadrotor_msgs::PolynomialTrajectoryConstPtr& msg) {
 void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) { odom_ = *msg; }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "poly_traj_server");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "poly_traj_server");
+  rclcpp::init(argc, argv, "poly_traj_server");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
   cmd_timer_ = nh.createTimer(ros::Duration(0.01), cmdPubCallback);
   traj_sub_ = nh.subscribe("traj", 1, &trajCallback);
@@ -87,7 +94,8 @@ int main(int argc, char** argv) {
 
   cmd_pub_ = nh.advertise<quadrotor_msgs::PositionCommand>("cmd", 1);
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
 
   return 0;
 }

@@ -36,7 +36,8 @@
 #include <multi_map_server/MultiOccupancyGrid.h>
 #include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/OccupancyGrid.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include "rviz/display.h"
 
@@ -92,7 +93,8 @@ class MultiProbMapDisplay : public Display {
 
   std::string topic_;
 
-  ros::Subscriber map_sub_;
+// ROS1:   ros::Subscriber map_sub_;
+  rclcpp::Subscriber map_sub_;
 
   RosTopicProperty* topic_property_;
   Property* draw_under_property_;

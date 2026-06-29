@@ -1,7 +1,8 @@
 #include <nav_msgs/Odometry.h>
 #include <quadrotor_msgs/SO3Command.h>
 #include <quadrotor_simulator/Quadrotor.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/Imu.h>
 #include <uav_utils/geometry_utils.h>
 
@@ -221,43 +222,66 @@ static void moment_disturbance_callback(
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "quadrotor_simulator_so3");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "quadrotor_simulator_so3");
+  rclcpp::init(argc, argv, "quadrotor_simulator_so3");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
-  ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
-  ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 10);
-  ros::Subscriber cmd_sub = nh.subscribe("cmd", 100, &cmd_callback,
-                                         ros::TransportHints().tcpNoDelay());
-  ros::Subscriber f_sub =
+// ROS1:   ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
+  rclcpp::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
+// ROS1:   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 10);
+  rclcpp::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 10);
+// ROS1:   ros::Subscriber cmd_sub = nh.subscribe("cmd", 100, &cmd_callback,
+  rclcpp::Subscriber cmd_sub = nh.subscribe("cmd", 100, &cmd_callback,
+// ROS1:                                          ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
+// ROS1:   ros::Subscriber f_sub =
+  rclcpp::Subscriber f_sub =
       nh.subscribe("force_disturbance", 100, &force_disturbance_callback,
-                   ros::TransportHints().tcpNoDelay());
-  ros::Subscriber m_sub =
+// ROS1:                    ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
+// ROS1:   ros::Subscriber m_sub =
+  rclcpp::Subscriber m_sub =
       nh.subscribe("moment_disturbance", 100, &moment_disturbance_callback,
-                   ros::TransportHints().tcpNoDelay());
+// ROS1:                    ros::TransportHints().tcpNoDelay());
+// ROS2: TransportHints not needed
 
   QuadrotorSimulator::Quadrotor quad;
   double init_x_, init_y_, init_z_;
-  nh.param("simulator/init_state_x", init_x_, 0.0);
-  nh.param("simulator/init_state_y", init_y_, 0.0);
-  nh.param("simulator/init_state_z", init_z_, 1.0);
+// ROS1:   nh.param("simulator/init_state_x", init_x_, 0.0);
+nh->declare_parameter<init_x_>("simulator/init_state_x", 0.0);
+nh->get_parameter("simulator/init_state_x", init_x_);
+// ROS1:   nh.param("simulator/init_state_y", init_y_, 0.0);
+nh->declare_parameter<init_y_>("simulator/init_state_y", 0.0);
+nh->get_parameter("simulator/init_state_y", init_y_);
+// ROS1:   nh.param("simulator/init_state_z", init_z_, 1.0);
+nh->declare_parameter<init_z_>("simulator/init_state_z", 1.0);
+nh->get_parameter("simulator/init_state_z", init_z_);
 
   Eigen::Vector3d position = Eigen::Vector3d(init_x_, init_y_, init_z_);
   quad.setStatePos(position);
 
   double simulation_rate;
-  nh.param("rate/simulation", simulation_rate, 1000.0);
+// ROS1:   nh.param("rate/simulation", simulation_rate, 1000.0);
+nh->declare_parameter<simulation_rate>("rate/simulation", 1000.0);
+nh->get_parameter("rate/simulation", simulation_rate);
   ROS_ASSERT(simulation_rate > 0);
 
   double odom_rate;
-  nh.param("rate/odom", odom_rate, 100.0);
+// ROS1:   nh.param("rate/odom", odom_rate, 100.0);
+nh->declare_parameter<odom_rate>("rate/odom", 100.0);
+nh->get_parameter("rate/odom", odom_rate);
   const ros::Duration odom_pub_duration(1 / odom_rate);
 
   std::string quad_name;
-  nh.param("quadrotor_name", quad_name, std::string("quadrotor"));
+// ROS1:   nh.param("quadrotor_name", quad_name, std::string("quadrotor"));
+nh->declare_parameter<quad_name>("quadrotor_name", std::string("quadrotor");
+nh->get_parameter("quadrotor_name", quad_name);
 
   QuadrotorSimulator::Quadrotor::State state = quad.getState();
 
-  ros::Rate r(simulation_rate);
+// ROS1:   ros::Rate r(simulation_rate);
+  rclcpp::Rate r(simulation_rate);
   const double dt = 1 / simulation_rate;
 
   Control control;
@@ -283,9 +307,11 @@ int main(int argc, char** argv) {
   // command.kOm[1] = 0.15;
   // command.kOm[2] = 0.15;
 
-  ros::Time next_odom_pub_time = ros::Time::now();
+// ROS1:   ros::Time next_odom_pub_time = ros::Time::now();
+  ros::Time next_odom_pub_time = rclcpp::Clock().now();
   while (nh.ok()) {
-    ros::spinOnce();
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
 
     auto last = control;
     control = getControl(quad, command);
@@ -299,7 +325,8 @@ int main(int argc, char** argv) {
     quad.setExternalMoment(disturbance.m);
     quad.step(dt);
 
-    ros::Time tnow = ros::Time::now();
+// ROS1:     ros::Time tnow = ros::Time::now();
+    ros::Time tnow = rclcpp::Clock().now();
 
     if (tnow >= next_odom_pub_time) {
       next_odom_pub_time += odom_pub_duration;

@@ -1,7 +1,8 @@
 #ifndef __UAV_UTILS_H
 #define __UAV_UTILS_H
 
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <uav_utils/converters.h>
 #include <uav_utils/geometry_utils.h>
 

@@ -4,7 +4,8 @@
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <boost/format.hpp>
 #include <deque>
@@ -15,9 +16,12 @@
 using namespace std;
 using bfmt = boost::format;
 
-ros::Publisher pub1;
-ros::Publisher pub2;
-ros::Publisher pub3;
+// ROS1: ros::Publisher pub1;
+rclcpp::Publisher pub1;
+// ROS1: ros::Publisher pub2;
+rclcpp::Publisher pub2;
+// ROS1: ros::Publisher pub3;
+rclcpp::Publisher pub3;
 
 string waypoint_type;
 bool is_odom_ready;
@@ -28,7 +32,8 @@ nav_msgs::Path waypoints;
 std::deque<nav_msgs::Path> waypointSegments;
 ros::Time trigged_time;
 
-void load_seg(ros::NodeHandle& nh, int segid, const ros::Time& time_base) {
+// ROS1: void load_seg(ros::NodeHandle& nh, int segid, const ros::Time& time_base) {
+void load_seg(rclcpp::Node::SharedPtr nh, int segid, const ros::Time& time_base) {
   std::string seg_str = boost::str(bfmt("seg%d/") % segid);
   double yaw;
   double time_of_start = 0.0;
@@ -53,10 +58,12 @@ void load_seg(ros::NodeHandle& nh, int segid, const ros::Time& time_base) {
 
   path_msg.header.stamp = time_base + ros::Duration(time_of_start);
 
+// ROS1:   double baseyaw = tf::getYaw(odom.pose.pose.orientation);
   double baseyaw = tf::getYaw(odom.pose.pose.orientation);
 
   for (size_t k = 0; k < ptx.size(); ++k) {
     geometry_msgs::PoseStamped pt;
+// ROS1:     pt.pose.orientation = tf::createQuaternionMsgFromYaw(baseyaw + yaw);
     pt.pose.orientation = tf::createQuaternionMsgFromYaw(baseyaw + yaw);
     Eigen::Vector2d dp(ptx.at(k), pty.at(k));
     Eigen::Vector2d rdp;
@@ -73,7 +80,8 @@ void load_seg(ros::NodeHandle& nh, int segid, const ros::Time& time_base) {
   waypointSegments.push_back(path_msg);
 }
 
-void load_waypoints(ros::NodeHandle& nh, const ros::Time& time_base) {
+// ROS1: void load_waypoints(ros::NodeHandle& nh, const ros::Time& time_base) {
+void load_waypoints(rclcpp::Node::SharedPtr nh, const ros::Time& time_base) {
   int seg_cnt = 0;
   waypointSegments.clear();
   ROS_ASSERT(nh.getParam("segment_cnt", seg_cnt));
@@ -89,7 +97,8 @@ void load_waypoints(ros::NodeHandle& nh, const ros::Time& time_base) {
 
 void publish_waypoints() {
   waypoints.header.frame_id = std::string("world");
-  waypoints.header.stamp = ros::Time::now();
+// ROS1:   waypoints.header.stamp = ros::Time::now();
+  waypoints.header.stamp = rclcpp::Clock().now();
   pub1.publish(waypoints);
   geometry_msgs::PoseStamped init_pose;
   init_pose.header = odom.header;
@@ -103,7 +112,8 @@ void publish_waypoints_vis() {
   nav_msgs::Path wp_vis = waypoints;
   geometry_msgs::PoseArray poseArray;
   poseArray.header.frame_id = std::string("world");
-  poseArray.header.stamp = ros::Time::now();
+// ROS1:   poseArray.header.stamp = ros::Time::now();
+  poseArray.header.stamp = rclcpp::Clock().now();
 
   {
     geometry_msgs::Pose init_pose;
@@ -156,11 +166,14 @@ void goal_callback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
           return;
       }*/
 
-  trigged_time = ros::Time::now();  // odom.header.stamp;
+// ROS1:   trigged_time = ros::Time::now();  // odom.header.stamp;
+  trigged_time = rclcpp::Clock().now();  // odom.header.stamp;
   // ROS_ASSERT(trigged_time > ros::Time(0));
 
   ros::NodeHandle n("~");
-  n.param("waypoint_type", waypoint_type, string("manual"));
+// ROS1:   n.param("waypoint_type", waypoint_type, string("manual"));
+n->declare_parameter<waypoint_type>("waypoint_type", string("manual");
+n->get_parameter("waypoint_type", waypoint_type);
 
   if (waypoint_type == string("circle")) {
     waypoints = circle();
@@ -193,7 +206,9 @@ void goal_callback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
       // if height > 0, it's a normal goal;
       geometry_msgs::PoseStamped pt = *msg;
       if (waypoint_type == string("noyaw")) {
+// ROS1:         double yaw = tf::getYaw(odom.pose.pose.orientation);
         double yaw = tf::getYaw(odom.pose.pose.orientation);
+// ROS1:         pt.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
         pt.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
       }
       waypoints.poses.push_back(pt);
@@ -225,7 +240,9 @@ void traj_start_trigger_callback(const geometry_msgs::PoseStamped& msg) {
   ROS_ASSERT(trigged_time > ros::Time(0));
 
   ros::NodeHandle n("~");
-  n.param("waypoint_type", waypoint_type, string("manual"));
+// ROS1:   n.param("waypoint_type", waypoint_type, string("manual"));
+n->declare_parameter<waypoint_type>("waypoint_type", string("manual");
+n->get_parameter("waypoint_type", waypoint_type);
 
   ROS_ERROR_STREAM("Pattern " << waypoint_type << " generated!");
   if (waypoint_type == string("free")) {
@@ -250,14 +267,20 @@ void traj_start_trigger_callback(const geometry_msgs::PoseStamped& msg) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "waypoint_generator");
+// ROS1:   ros::init(argc, argv, "waypoint_generator");
+  rclcpp::init(argc, argv, "waypoint_generator");
   ros::NodeHandle n("~");
 
-  n.param("waypoint_type", waypoint_type, string("manual"));
+// ROS1:   n.param("waypoint_type", waypoint_type, string("manual"));
+n->declare_parameter<waypoint_type>("waypoint_type", string("manual");
+n->get_parameter("waypoint_type", waypoint_type);
 
-  ros::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
-  ros::Subscriber sub2 = n.subscribe("goal", 10, goal_callback);
-  ros::Subscriber sub3 =
+// ROS1:   ros::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
+  rclcpp::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
+// ROS1:   ros::Subscriber sub2 = n.subscribe("goal", 10, goal_callback);
+  rclcpp::Subscriber sub2 = n.subscribe("goal", 10, goal_callback);
+// ROS1:   ros::Subscriber sub3 =
+  rclcpp::Subscriber sub3 =
       n.subscribe("traj_start_trigger", 10, traj_start_trigger_callback);
 
   pub1 = n.advertise<nav_msgs::Path>("waypoints", 50);
@@ -265,7 +288,8 @@ int main(int argc, char** argv) {
 
   trigged_time = ros::Time(0);
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
 
   return 0;
 }

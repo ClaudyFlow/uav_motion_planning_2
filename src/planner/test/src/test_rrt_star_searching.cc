@@ -13,12 +13,17 @@
 
 path_searching::RRTStar::Ptr rrt_star_;
 
-ros::Subscriber goal_sub;
-ros::Subscriber odom_sub;
+// ROS1: ros::Subscriber goal_sub;
+rclcpp::Subscriber goal_sub;
+// ROS1: ros::Subscriber odom_sub;
+rclcpp::Subscriber odom_sub;
 
-// ros::Publisher path_pub;
-// ros::Publisher rrt_tree_vertices_pub;
-// ros::Publisher rrt_tree_edges_pub;
+// ROS1: // ros::Publisher path_pub;
+// rclcpp::Publisher path_pub;
+// ROS1: // ros::Publisher rrt_tree_vertices_pub;
+// rclcpp::Publisher rrt_tree_vertices_pub;
+// ROS1: // ros::Publisher rrt_tree_edges_pub;
+// rclcpp::Publisher rrt_tree_edges_pub;
 
 nav_msgs::Odometry::ConstPtr odom_;
 std::vector<Eigen::Vector3d> path;
@@ -51,12 +56,16 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "test_rrt_star_searching");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "test_rrt_star_searching");
+  rclcpp::init(argc, argv, "test_rrt_star_searching");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
-  ros::Subscriber goal_sub =
+// ROS1:   ros::Subscriber goal_sub =
+  rclcpp::Subscriber goal_sub =
       nh.subscribe<geometry_msgs::PoseStamped>("/goal", 10, &GoalCallback);
-  ros::Subscriber odom_sub =
+// ROS1:   ros::Subscriber odom_sub =
+  rclcpp::Subscriber odom_sub =
       nh.subscribe<nav_msgs::Odometry>("/visual_slam/odom", 10, &OdomCallback);
 
   // path_pub = nh.advertise<visualization_msgs::Marker>("path", 10);
@@ -74,6 +83,7 @@ int main(int argc, char** argv) {
   rrt_star_->setGridMap(grid_map);
   rrt_star_->init();
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include_header
 #include "path_searching/kino_astar.hh"
 #pragma endregion include_header
@@ -15,19 +16,44 @@
 
 namespace path_searching {
 
-void KinoAStar::setParam(ros::NodeHandle& nh) {
-  nh.param("kino_astar/allocated_node_num", allocated_node_num_, 100000);
-  nh.param("kino_astar/collision_check_type", collision_check_type_, 1);
-  nh.param("kino_astar/rou_time", rou_, 1.0);
-  nh.param("kino_astar/lambda_heu", lambda_heu_, 2.0);
-  nh.param("kino_astar/goal_tolerance", goal_tolerance_, 2.0);
-  nh.param("kino_astar/time_step_size", step_size_, 0.1);
-  nh.param("kino_astar/max_velocity", max_vel_, 5.0);
-  nh.param("kino_astar/max_accelration", max_accel_, 7.0);
-  nh.param("kino_astar/acc_resolution", acc_res_, 2.0);
-  nh.param("kino_astar/sample_tau", sample_tau_, 0.5);
-  nh.param("kino_se3/robot_r", robot_r_, 0.2);
-  nh.param("kino_se3/robot_h", robot_h_, 0.1);
+// ROS1: void KinoAStar::setParam(ros::NodeHandle& nh) {
+void KinoAStar::setParam(rclcpp::Node::SharedPtr nh) {
+// ROS1:   nh.param("kino_astar/allocated_node_num", allocated_node_num_, 100000);
+nh->declare_parameter<allocated_node_num_>("kino_astar/allocated_node_num", 100000);
+nh->get_parameter("kino_astar/allocated_node_num", allocated_node_num_);
+// ROS1:   nh.param("kino_astar/collision_check_type", collision_check_type_, 1);
+nh->declare_parameter<collision_check_type_>("kino_astar/collision_check_type", 1);
+nh->get_parameter("kino_astar/collision_check_type", collision_check_type_);
+// ROS1:   nh.param("kino_astar/rou_time", rou_, 1.0);
+nh->declare_parameter<rou_>("kino_astar/rou_time", 1.0);
+nh->get_parameter("kino_astar/rou_time", rou_);
+// ROS1:   nh.param("kino_astar/lambda_heu", lambda_heu_, 2.0);
+nh->declare_parameter<lambda_heu_>("kino_astar/lambda_heu", 2.0);
+nh->get_parameter("kino_astar/lambda_heu", lambda_heu_);
+// ROS1:   nh.param("kino_astar/goal_tolerance", goal_tolerance_, 2.0);
+nh->declare_parameter<goal_tolerance_>("kino_astar/goal_tolerance", 2.0);
+nh->get_parameter("kino_astar/goal_tolerance", goal_tolerance_);
+// ROS1:   nh.param("kino_astar/time_step_size", step_size_, 0.1);
+nh->declare_parameter<step_size_>("kino_astar/time_step_size", 0.1);
+nh->get_parameter("kino_astar/time_step_size", step_size_);
+// ROS1:   nh.param("kino_astar/max_velocity", max_vel_, 5.0);
+nh->declare_parameter<max_vel_>("kino_astar/max_velocity", 5.0);
+nh->get_parameter("kino_astar/max_velocity", max_vel_);
+// ROS1:   nh.param("kino_astar/max_accelration", max_accel_, 7.0);
+nh->declare_parameter<max_accel_>("kino_astar/max_accelration", 7.0);
+nh->get_parameter("kino_astar/max_accelration", max_accel_);
+// ROS1:   nh.param("kino_astar/acc_resolution", acc_res_, 2.0);
+nh->declare_parameter<acc_res_>("kino_astar/acc_resolution", 2.0);
+nh->get_parameter("kino_astar/acc_resolution", acc_res_);
+// ROS1:   nh.param("kino_astar/sample_tau", sample_tau_, 0.5);
+nh->declare_parameter<sample_tau_>("kino_astar/sample_tau", 0.5);
+nh->get_parameter("kino_astar/sample_tau", sample_tau_);
+// ROS1:   nh.param("kino_se3/robot_r", robot_r_, 0.2);
+nh->declare_parameter<robot_r_>("kino_se3/robot_r", 0.2);
+nh->get_parameter("kino_se3/robot_r", robot_r_);
+// ROS1:   nh.param("kino_se3/robot_h", robot_h_, 0.1);
+nh->declare_parameter<robot_h_>("kino_se3/robot_h", 0.1);
+nh->get_parameter("kino_se3/robot_h", robot_h_);
 
   local_cloud_sub_ = nh.subscribe<sensor_msgs::PointCloud2>(
       "local_cloud", 10, &KinoAStar::localCloudCallback, this);
@@ -91,7 +117,8 @@ void KinoAStar::setGridMap(GridMap::Ptr& grid_map) {
 int KinoAStar::search(Eigen::Vector3d start_pt, Eigen::Vector3d start_vel,
                       Eigen::Vector3d end_pt, Eigen::Vector3d end_vel,
                       std::vector<Eigen::Vector3d>& path) {
-  ros::Time start_time = ros::Time::now();
+// ROS1:   ros::Time start_time = ros::Time::now();
+  ros::Time start_time = rclcpp::Clock().now();
   double inv_acc_res_ = 1.0 / acc_res_;
   double optimal_time = std::numeric_limits<double>::infinity();
   KinoAStarNode* start_node = path_node_pool_[use_node_num_];
@@ -130,7 +157,8 @@ int KinoAStar::search(Eigen::Vector3d start_pt, Eigen::Vector3d start_vel,
                           end_pt, end_vel, optimal_time);
       // std::cout << "optimal_time: " << optimal_time << std::endl;
       if (shot_path_found) {
-        ros::Time end_time = ros::Time::now();
+// ROS1:         ros::Time end_time = ros::Time::now();
+        ros::Time end_time = rclcpp::Clock().now();
         std::cout << "kinodynamic path found, time cost: "
                   << (end_time - start_time).toSec() << std::endl;
         std::cout << "use_node_num: " << use_node_num_ << std::endl;
@@ -662,7 +690,8 @@ void KinoAStar::visEllipsoid(std::vector<Eigen::Vector3d>& path_nodes_list,
     // publishes the ellipsoid
     visualization_msgs::Marker elliposid_marker_;
     elliposid_marker_.header.frame_id = "world";
-    elliposid_marker_.header.stamp = ros::Time::now();
+// ROS1:     elliposid_marker_.header.stamp = ros::Time::now();
+    elliposid_marker_.header.stamp = rclcpp::Clock().now();
     elliposid_marker_.ns = "elliposid";
     elliposid_marker_.id = i;
     elliposid_marker_.type = visualization_msgs::Marker::SPHERE;

@@ -1,4 +1,5 @@
-#ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_RRT_STAR
+// ROS1: #ifndef SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_RRT_STAR
+#include <rclcpp/rclcpp.hpp>
 #define SRC_PLANNER_PATH_SEARCHING_INCLUDE_PATH_SEARCHING_RRT_STAR
 
 #pragma region include
@@ -55,9 +56,12 @@ class RRTStar {
   double resolution_;
 
   /* main ros publishers and subscribers */
-  ros::Publisher vis_path_pub_;
-  ros::Publisher vis_waypoints_pub_;
-  ros::Publisher vis_tree_pub_;
+// ROS1:   ros::Publisher vis_path_pub_;
+  rclcpp::Publisher vis_path_pub_;
+// ROS1:   ros::Publisher vis_waypoints_pub_;
+  rclcpp::Publisher vis_waypoints_pub_;
+// ROS1:   ros::Publisher vis_tree_pub_;
+  rclcpp::Publisher vis_tree_pub_;
   visualization_msgs::Marker vis_path_marker_;
   visualization_msgs::Marker vis_waypoints_marker_;
   visualization_msgs::Marker vis_tree_marker_;
@@ -77,7 +81,8 @@ class RRTStar {
 
  public:
   /* main interface function */
-  void setParam(ros::NodeHandle& nh);
+// ROS1:   void setParam(ros::NodeHandle& nh);
+  void setParam(rclcpp::Node::SharedPtr nh);
   void setGridMap(GridMap::Ptr& grid_map);
 
   void getWholeTree(

@@ -1,8 +1,10 @@
+// ROS1: #include <dynamic_reconfigure/server.h>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <so3_disturbance_generator/DisturbanceUIConfig.h>
 
 #include "pose_utils.h"
@@ -12,10 +14,14 @@ using namespace std;
 
 #define CORRECTION_RATE 1
 
-ros::Publisher pubo;
-ros::Publisher pubc;
-ros::Publisher pubf;
-ros::Publisher pubm;
+// ROS1: ros::Publisher pubo;
+rclcpp::Publisher pubo;
+// ROS1: ros::Publisher pubc;
+rclcpp::Publisher pubc;
+// ROS1: ros::Publisher pubf;
+rclcpp::Publisher pubf;
+// ROS1: ros::Publisher pubm;
+rclcpp::Publisher pubm;
 so3_disturbance_generator::DisturbanceUIConfig config;
 nav_msgs::Odometry noisy_odom;
 geometry_msgs::PoseStamped correction;
@@ -152,26 +158,32 @@ void set_disturbance() {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "so3_disturbance_generator");
+// ROS1:   ros::init(argc, argv, "so3_disturbance_generator");
+  rclcpp::init(argc, argv, "so3_disturbance_generator");
   ros::NodeHandle n("~");
 
-  ros::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
+// ROS1:   ros::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
+  rclcpp::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
   pubo = n.advertise<nav_msgs::Odometry>("noisy_odom", 10);
   pubc = n.advertise<geometry_msgs::PoseStamped>("correction", 10);
   pubf = n.advertise<geometry_msgs::Vector3>("force_disturbance", 10);
   pubm = n.advertise<geometry_msgs::Vector3>("moment_disturbance", 10);
 
   // Dynamic Reconfig
+// ROS1:   dynamic_reconfigure::Server<so3_disturbance_generator::DisturbanceUIConfig>
   dynamic_reconfigure::Server<so3_disturbance_generator::DisturbanceUIConfig>
       server;
+// ROS1:   dynamic_reconfigure::Server<
   dynamic_reconfigure::Server<
       so3_disturbance_generator::DisturbanceUIConfig>::CallbackType ff;
   ff = boost::bind(&config_callback, _1, _2);
   server.setCallback(ff);
 
-  ros::Rate r(100.0);
+// ROS1:   ros::Rate r(100.0);
+  rclcpp::Rate r(100.0);
   while (n.ok()) {
-    ros::spinOnce();
+// ROS1:     ros::spinOnce();
+    rclcpp::spin_some(nh);
     set_disturbance();
     r.sleep();
   }

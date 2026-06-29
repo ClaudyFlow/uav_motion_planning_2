@@ -1,4 +1,5 @@
-#pragma region include
+// ROS1: #pragma region include
+#include <rclcpp/rclcpp.hpp>
 #pragma region include::project
 #include "path_searching/rrt_star.hh"
 #include "traj_optimization/minimum_control.hh"
@@ -14,10 +15,13 @@
 path_searching::RRTStar::Ptr rrt_star_;
 traj_optimization::MinimumControl::Ptr optimizer_;
 
-ros::Subscriber goal_sub;
-ros::Subscriber odom_sub;
+// ROS1: ros::Subscriber goal_sub;
+rclcpp::Subscriber goal_sub;
+// ROS1: ros::Subscriber odom_sub;
+rclcpp::Subscriber odom_sub;
 
-ros::Publisher trajectory_pub;
+// ROS1: ros::Publisher trajectory_pub;
+rclcpp::Publisher trajectory_pub;
 visualization_msgs::Marker trajectory_marker;
 
 nav_msgs::Odometry::ConstPtr odom_;
@@ -166,8 +170,10 @@ void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "test_minimum_jerk");
-  ros::NodeHandle nh("~");
+// ROS1:   ros::init(argc, argv, "test_minimum_jerk");
+  rclcpp::init(argc, argv, "test_minimum_jerk");
+// ROS1:   ros::NodeHandle nh("~");
+  rclcpp::Node::SharedPtr nh("~");
 
   goal_sub =
       nh.subscribe<geometry_msgs::PoseStamped>("/goal", 10, &GoalCallback);
@@ -177,7 +183,8 @@ int main(int argc, char** argv) {
   trajectory_pub = nh.advertise<visualization_msgs::Marker>("/trajectory", 10);
 
   trajectory_marker.header.frame_id = "world";
-  trajectory_marker.header.stamp = ros::Time::now();
+// ROS1:   trajectory_marker.header.stamp = ros::Time::now();
+  trajectory_marker.header.stamp = rclcpp::Clock().now();
   trajectory_marker.ns = "trajectory";
   trajectory_marker.type = visualization_msgs::Marker::LINE_STRIP;
   trajectory_marker.action = visualization_msgs::Marker::ADD;
@@ -200,6 +207,7 @@ int main(int argc, char** argv) {
   rrt_star_->setGridMap(grid_map);
   rrt_star_->init();
 
-  ros::spin();
+// ROS1:   ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

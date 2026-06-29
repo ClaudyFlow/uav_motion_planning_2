@@ -35,7 +35,8 @@
 #include <OGRE/OgreVector3.h>
 #include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/OccupancyGrid.h>
-#include <ros/ros.h>
+// ROS1: #include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include "rviz/display.h"
 
@@ -106,7 +107,8 @@ class ProbMapDisplay : public Display {
   Ogre::Quaternion orientation_;
   std::string frame_;
 
-  ros::Subscriber map_sub_;
+// ROS1:   ros::Subscriber map_sub_;
+  rclcpp::Subscriber map_sub_;
 
   RosTopicProperty* topic_property_;
   FloatProperty* resolution_property_;
