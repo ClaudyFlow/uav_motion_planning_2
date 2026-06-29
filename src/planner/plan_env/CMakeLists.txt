@@ -187,6 +187,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(service_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 include(CMakeParseArguments)
@@ -209,7 +210,7 @@ file(GLOB_RECURSE PLAN_ENV_SOURCES "src/plan_env/*.cc")
 
 add_library(plan_env ${PLAN_ENV_SOURCES})
 
-ament_target_dependencies(plan_env rclcpp std_msgs Eigen3)
+ament_target_dependencies(plan_env rclcpp std_msgs service_msgs Eigen3)
 
 # 确保 rclcpp 和 std_msgs 的 include 目录被加入
 target_include_directories(plan_env PUBLIC
@@ -220,5 +221,5 @@ target_include_directories(plan_env PUBLIC
   src
 )
 
-ament_export_dependencies(rclcpp std_msgs Eigen3)
+ament_export_dependencies(rclcpp std_msgs service_msgs Eigen3)
 ament_package()
