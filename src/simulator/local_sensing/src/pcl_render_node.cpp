@@ -26,7 +26,7 @@
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 // include opencv and eigen
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 
 #include <Eigen/Eigen>
 #include <opencv2/core/eigen.hpp>

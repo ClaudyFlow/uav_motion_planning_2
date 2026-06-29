@@ -1,5 +1,5 @@
 #include <cloud_banchmark/cloud_banchmarkConfig.h>
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 // ROS1: #include <dynamic_reconfigure/server.h>
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/PoseStamped.h>
