@@ -211,5 +211,14 @@ add_library(plan_env ${PLAN_ENV_SOURCES})
 
 ament_target_dependencies(plan_env rclcpp std_msgs Eigen3)
 
+# 确保 rclcpp 和 std_msgs 的 include 目录被加入
+target_include_directories(plan_env PUBLIC
+  ${rclcpp_INCLUDE_DIRS}
+  ${std_msgs_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  include
+  src
+)
+
 ament_export_dependencies(rclcpp std_msgs Eigen3)
 ament_package()
