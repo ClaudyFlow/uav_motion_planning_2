@@ -221,6 +221,7 @@ target_include_directories(plan_env PUBLIC
   /opt/ros/lyrical/include/service_msgs
   /opt/ros/lyrical/include/type_description_interfaces
   /opt/ros/lyrical/include/cv_bridge
+  /opt/ros/lyrical/include/sensor_msgs
   /opt/ros/lyrical/include
   include
   src
