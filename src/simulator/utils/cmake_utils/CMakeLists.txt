@@ -1,7 +1,7 @@
 # ==============================================================================
 # ROS1 ORIGINAL (commented out)
 # ==============================================================================
-# cmake_minimum_required(VERSION 2.8.3)
+# cmake_minimum_required(VERSION 3.8)
 # project(cmake_utils)
 #
 # find_package(catkin REQUIRED COMPONENTS roscpp)

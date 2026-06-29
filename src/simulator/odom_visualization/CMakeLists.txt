@@ -36,7 +36,7 @@
 # #target_link_libraries(odom_visualization pose_utils)
 #
 # #----------------------------------
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(odom_visualization)
 #
 # add_compile_options(-std=c++11)

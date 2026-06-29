@@ -1,7 +1,7 @@
 # ==============================================================================
 # ROS1 ORIGINAL (commented out)
 # ==============================================================================
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(path_searching)
 #
 # find_package(Eigen3 REQUIRED)

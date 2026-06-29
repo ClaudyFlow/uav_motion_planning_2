@@ -43,7 +43,7 @@
 # #-rosbuild_add_link_flags(decode_msgs -Wl,--as-needed)
 #
 # #------------------------------------------------------------------
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(quadrotor_msgs)
 #
 # find_package(catkin REQUIRED COMPONENTS

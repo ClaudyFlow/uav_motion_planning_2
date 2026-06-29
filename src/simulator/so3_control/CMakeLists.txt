@@ -45,7 +45,7 @@
 # #rosbuild_add_link_flags(so3_control_nodelet -Wl,--as-needed)
 #
 # #----------------------------------
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(so3_control)
 #
 # add_compile_options(-std=c++11)

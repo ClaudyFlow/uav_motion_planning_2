@@ -1,7 +1,7 @@
 # ==============================================================================
 # ROS1 ORIGINAL (commented out)
 # ==============================================================================
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(traj_utils)
 #
 # ## Compile as C++11, supported in ROS Kinetic and newer

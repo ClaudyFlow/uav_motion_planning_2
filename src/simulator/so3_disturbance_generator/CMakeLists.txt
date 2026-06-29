@@ -40,7 +40,7 @@
 # #rosbuild_add_executable(so3_disturbance_generator src/so3_disturbance_generator.cpp)
 # #target_link_libraries(so3_disturbance_generator pose_utils)
 # #----------------------------------
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(so3_disturbance_generator)
 #
 # ## Find catkin macros and libraries

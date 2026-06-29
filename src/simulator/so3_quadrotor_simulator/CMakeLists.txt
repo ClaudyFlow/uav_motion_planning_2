@@ -1,7 +1,7 @@
 # ==============================================================================
 # ROS1 ORIGINAL (commented out)
 # ==============================================================================
-# cmake_minimum_required(VERSION 3.0.2)
+# cmake_minimum_required(VERSION 3.8)
 # project(so3_quadrotor_simulator)
 #
 # add_compile_options(-std=c++11)
