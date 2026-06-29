@@ -25,7 +25,7 @@
 # #rosbuild_gensrv()
 #
 # #common commands for building c++ executables and libraries
-# #-\rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
+# #-osbuild_add_library(${PROJECT_NAME} src/example.cpp)
 # #target_link_libraries(${PROJECT_NAME} another_library)
 # #rosbuild_add_boost_directories()
 # #rosbuild_link_boost(${PROJECT_NAME} thread)
@@ -106,8 +106,9 @@
 # #     decode_msgs 
 # #     encode_msgs
 # # )
-#
 
+
+# ==============================================================================
 # ==============================================================================
 # ROS2 VERSION
 # ==============================================================================
@@ -121,9 +122,37 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  msg/AuxCommand.msg
+  msg/Corrections.msg
+  msg/Gains.msg
+  msg/LQRTrajectory.msg
+  msg/Odometry.msg
+  msg/OutputData.msg
+  msg/PPROutputData.msg
+  msg/PolynomialTrajectory.msg
+  msg/PositionCommand.msg
+  msg/SO3Command.msg
+  msg/Serial.msg
+  msg/StatusData.msg
+  msg/TRPYCommand.msg
+  DEPENDENCIES std_msgs geometry_msgs
+)
 
 add_library(decode_msgs src/decode_msgs.cpp)
 add_library(encode_msgs src/encode_msgs.cpp)
 
+target_include_directories(decode_msgs PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
+)
+target_include_directories(encode_msgs PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
+)
+
 ament_export_dependencies(std_msgs geometry_msgs)
+ament_export_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 ament_package()
