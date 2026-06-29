@@ -67,9 +67,8 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(path_searching REQUIRED)
 
 add_library(plan_env ${PLAN_ENV_SOURCES})
 
-ament_export_dependencies(Eigen3 path_searching)
+ament_export_dependencies(Eigen3)
 ament_package()
