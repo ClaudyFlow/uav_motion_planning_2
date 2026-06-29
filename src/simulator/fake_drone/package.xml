@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?xml version="1.0"?>
 <!-- ======= ROS1 VERSION (commented out) ======= -->
 <!--
 <?xml version="1.0"?>
@@ -7,7 +6,7 @@
   <name>fake_drone</name>
   <version>0.0.0</version>
   <description>The fake_drone package</description>
-  <maintainer email="zzzx@todo.todo">todo</maintainer>
+  <maintainer email="ubuntu@todo.todo">ubuntu</maintainer>
   <license>TODO</license>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
@@ -15,12 +14,11 @@
   <build_depend>nav_msgs</build_depend>
   <build_depend>quadrotor_msgs</build_depend>
   <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>nav_msgs</build_export_depend>
-  <build_export_depend>quadrotor_msgs</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
   <exec_depend>roscpp</exec_depend>
-  <exec_depend>nav_msgs</exec_depend>
-  <exec_depend>quadrotor_msgs</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <export>
+  </export>
 </package>
 -->
 
@@ -29,12 +27,12 @@
   <name>fake_drone</name>
   <version>0.0.0</version>
   <description>The fake_drone package</description>
-  <maintainer email="zzzx@todo.todo">todo</maintainer>
+  <maintainer email="ubuntu@todo.todo">ubuntu</maintainer>
   <license>TODO</license>
-
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
   <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
   <depend>quadrotor_msgs</depend>
-  <depend>Eigen3</depend>
 </package>
