@@ -186,17 +186,30 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
+
+include(CMakeParseArguments)
+function(ament_target_dependencies TARGET)
+    cmake_parse_arguments(ATD "" "" "DEPENDENCIES" ${ARGN})
+    if(ATD_DEPENDENCIES)
+        foreach(DEP ${ATD_DEPENDENCIES})
+            find_package(${DEP} REQUIRED)
+            if(DEFINED ${DEP}_INCLUDE_DIRS)
+                target_include_directories(${TARGET} PUBLIC ${${DEP}_INCLUDE_DIRS})
+            endif()
+            if(DEFINED ${DEP}_LIBRARIES)
+                target_link_libraries(${TARGET} PUBLIC ${${DEP}_LIBRARIES})
+            endif()
+        endforeach()
+    endif()
+endfunction()
 
 file(GLOB_RECURSE PLAN_ENV_SOURCES "src/plan_env/*.cc")
 
 add_library(plan_env ${PLAN_ENV_SOURCES})
 
-target_include_directories(plan_env PUBLIC
-  include
-  src
-  ${EIGEN3_INCLUDE_DIRS}
-)
+ament_target_dependencies(plan_env rclcpp std_msgs Eigen3)
 
-ament_export_dependencies(Eigen3 rclcpp)
+ament_export_dependencies(rclcpp std_msgs Eigen3)
 ament_package()
