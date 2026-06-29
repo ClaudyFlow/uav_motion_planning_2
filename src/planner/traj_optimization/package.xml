@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!-- ======= ROS1 VERSION (commented out) ======= -->
 <!--
-<?xml version="1.0"?>
 <package format="2">
   <name>traj_optimization</name>
   <version>0.0.0</version>
