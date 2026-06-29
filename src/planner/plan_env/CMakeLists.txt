@@ -174,51 +174,29 @@
 
 # ROS2 VERSION
 
-
 # ==============================================================================
 
-
-cmake_minimum_required(VERSION 3.8)
-
+cmake_minimum_required(VERSION 3.10)
 
 project(plan_env)
 
-
-
-
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-
-
   add_compile_options(-Wall -Wextra -Wpedantic)
-
-
 endif()
 
-
-
-
-
 find_package(ament_cmake REQUIRED)
-
+find_package(rclcpp REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 file(GLOB_RECURSE PLAN_ENV_SOURCES "src/plan_env/*.cc")
 
-find_package(Eigen3 REQUIRED)
-
-
-
-
-
 add_library(plan_env ${PLAN_ENV_SOURCES})
 
+target_include_directories(plan_env PUBLIC
+  include
+  src
+  ${EIGEN3_INCLUDE_DIRS}
+)
 
-
-
-
-ament_export_dependencies(Eigen3)
-
-
+ament_export_dependencies(Eigen3 rclcpp)
 ament_package()
-
-
