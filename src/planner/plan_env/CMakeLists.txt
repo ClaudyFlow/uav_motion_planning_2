@@ -219,6 +219,7 @@ target_include_directories(plan_env PUBLIC
   ${service_msgs_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   /opt/ros/lyrical/include/service_msgs
+  /opt/ros/lyrical/include
   include
   src
 )
