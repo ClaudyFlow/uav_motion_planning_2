@@ -162,8 +162,8 @@ void SDFMap::initMap(rclcpp::Node::SharedPtr nh) {
         node_, "/sdf_map/depth", qos);
     pose_sub_ = std::make_shared<message_filters::Subscriber<geometry_msgs::msg::PoseStamped>>(
         node_, "/sdf_map/pose", qos);
-    sync_image_pose_ = std::make_shared<SynchronizerImagePose>(
-        SynchronizerImagePose(100), *depth_sub_, *pose_sub_);
+    sync_image_pose_ = std::make_shared<message_filters::Synchronizer<SyncPolicyImagePose>>(
+        SyncPolicyImagePose(100), *depth_sub_, *pose_sub_);
     sync_image_pose_->registerCallback(
         std::bind(&SDFMap::depthPoseCallback, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -172,8 +172,8 @@ void SDFMap::initMap(rclcpp::Node::SharedPtr nh) {
         node_, "/sdf_map/depth", qos);
     odom_sub_ = std::make_shared<message_filters::Subscriber<nav_msgs::msg::Odometry>>(
         node_, "/sdf_map/odom", qos);
-    sync_image_odom_ = std::make_shared<SynchronizerImageOdom>(
-        SynchronizerImageOdom(100), *depth_sub_, *odom_sub_);
+    sync_image_odom_ = std::make_shared<message_filters::Synchronizer<SyncPolicyImageOdom>>(
+        SyncPolicyImageOdom(100), *depth_sub_, *odom_sub_);
     sync_image_odom_->registerCallback(
         std::bind(&SDFMap::depthOdomCallback, this, std::placeholders::_1, std::placeholders::_2));
   }
