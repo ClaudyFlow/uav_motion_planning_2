@@ -158,8 +158,8 @@ void GridMap::initMap(rclcpp::Node::SharedPtr nh) {
         new message_filters::Synchronizer<SyncPolicyImagePose>(
             SyncPolicyImagePose(100), *depth_sub_, *pose_sub_));
     sync_image_pose_->registerCallback(
-        [this](const sensor_msgs::msg::Image::SharedPtr& img,
-               const geometry_msgs::msg::PoseStamped::SharedPtr& pose) {
+        [this](const sensor_msgs::msg::Image::ConstSharedPtr& img,
+               const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose) {
           this->depthPoseCallback(img, pose);
         });
   } else if (mp_.pose_type_ == ODOMETRY) {
@@ -172,8 +172,8 @@ void GridMap::initMap(rclcpp::Node::SharedPtr nh) {
         new message_filters::Synchronizer<SyncPolicyImageOdom>(
             SyncPolicyImageOdom(100), *depth_sub_, *odom_sub_));
     sync_image_odom_->registerCallback(
-        [this](const sensor_msgs::msg::Image::SharedPtr& img,
-               const nav_msgs::msg::Odometry::SharedPtr& odom) {
+        [this](const sensor_msgs::msg::Image::ConstSharedPtr& img,
+               const nav_msgs::msg::Odometry::ConstSharedPtr& odom) {
           this->depthOdomCallback(img, odom);
         });
   }
@@ -661,13 +661,13 @@ void GridMap::clearAndInflateLocalMap() {
 }
 
 // ROS1: void GridMap::visCallback(const ros::TimerEvent& /*event*/) {
-void GridMap::visCallback(const rclcpp::TimerEvent& /*event*/) {
+void GridMap::visCallback() {
   publishMap();
   publishMapInflate(true);
 }
 
 // ROS1: void GridMap::updateOccupancyCallback(const ros::TimerEvent& /*event*/) {
-void GridMap::updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/) {
+void GridMap::updateOccupancyCallback() {
   if (!md_.occ_need_update_) return;
 
   /* update occupancy */

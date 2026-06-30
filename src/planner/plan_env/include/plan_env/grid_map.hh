@@ -1,4 +1,4 @@
-// ROS1: #ifndef SRC_PLANNER_PLAN_ENV_INCLUDE_PLAN_ENV_GRID_MAP
+#ifndef SRC_PLANNER_PLAN_ENV_INCLUDE_PLAN_ENV_GRID_MAP
 #include <rclcpp/rclcpp.hpp>
 #define SRC_PLANNER_PLAN_ENV_INCLUDE_PLAN_ENV_GRID_MAP
 
@@ -207,9 +207,9 @@ class GridMap {
 
   // update occupancy by raycasting
 // ROS1:   void updateOccupancyCallback(const ros::TimerEvent& /*event*/);
-  void updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/);
+  void updateOccupancyCallback();
 // ROS1:   void visCallback(const ros::TimerEvent& /*event*/);
-  void visCallback(const rclcpp::TimerEvent& /*event*/);
+  void visCallback();
 
   // main update process
   void projectDepthImage();
@@ -261,12 +261,12 @@ class GridMap {
 // ROS1:   ros::Subscriber local_cloud_sub_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr local_cloud_sub_;
 // ROS1:   ros::Publisher map_pub_, map_inf_pub_;
-  rclcpp::Publisher::SharedPtr map_pub_;
-  rclcpp::Publisher::SharedPtr map_inf_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_inf_pub_;
 // ROS1:   ros::Publisher convex_obstacle_pub_;
-  rclcpp::Publisher::SharedPtr convex_obstacle_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr convex_obstacle_pub_;
 // ROS1:   ros::Publisher unknown_pub_;
-  rclcpp::Publisher::SharedPtr unknown_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr unknown_pub_;
 // ROS1:   ros::Timer occ_timer_, vis_timer_;
   rclcpp::TimerBase::SharedPtr occ_timer_;
   rclcpp::TimerBase::SharedPtr vis_timer_;
