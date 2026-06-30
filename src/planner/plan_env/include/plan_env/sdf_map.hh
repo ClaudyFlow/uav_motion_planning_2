@@ -9,6 +9,7 @@
 #include <message_filters/message_filters/sync_policies/exact_time.hpp>
 #include <message_filters/message_filters/time_synchronizer.hpp>
 #include <nav_msgs/nav_msgs/msg/odometry.hpp>
+#include <visualization_msgs/visualization_msgs/msg/marker.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -275,6 +276,8 @@ class SDFMap {
 
 // ROS1:   ros::Subscriber indep_depth_sub_, indep_odom_sub_, indep_pose_sub_,
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr indep_cloud_sub_;
+  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr indep_odom_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr indep_pose_sub_;
 // ROS1:   ros::Publisher map_pub_, esdf_pub_, map_inf_pub_, update_range_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_pub_, esdf_pub_, map_inf_pub_;
   rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr update_range_pub_;

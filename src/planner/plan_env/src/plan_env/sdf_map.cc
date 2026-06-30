@@ -181,13 +181,13 @@ void SDFMap::initMap(rclcpp::Node::SharedPtr nh) {
   // independent subscribers using create_subscription
   indep_cloud_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(
       "/sdf_map/cloud", qos,
-      [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+      [this](const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) {
         cloudCallback(msg);
       });
 
   indep_odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(
       "/sdf_map/odom", qos,
-      [this](const nav_msgs::msg::Odometry::SharedPtr msg) {
+      [this](const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
         odomCallback(msg);
       });
 
