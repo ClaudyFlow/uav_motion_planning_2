@@ -53,7 +53,7 @@ add_library(traj_optimization ${TRAJ_OPT_SOURCES})
 
 target_include_directories(traj_optimization PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp/include/public
 )
 
 ament_export_dependencies(Eigen3)
