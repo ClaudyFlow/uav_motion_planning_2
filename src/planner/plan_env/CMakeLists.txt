@@ -675,6 +675,7 @@ target_include_directories(plan_env PUBLIC
 
   /opt/ros/lyrical/include/sensor_msgs
   /opt/ros/lyrical/include/pcl_conversions
+  /opt/ros/lyrical/include/pcl_msgs
   /usr/include/pcl-1.15
 
 
