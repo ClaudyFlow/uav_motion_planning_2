@@ -48,7 +48,10 @@ find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 set(OSQP_EIGEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp-eigen)
-find_package(OsqpEigen QUIET PATHS ${OSQP_EIGEN_DIR} NO_DEFAULT_PATH)
+set(OSQP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp)
+
+add_subdirectory(${OSQP_DIR} ${CMAKE_CURRENT_BINARY_DIR}/osqp-build)
+add_subdirectory(${OSQP_EIGEN_DIR} ${CMAKE_CURRENT_BINARY_DIR}/osqp-eigen-build)
 
 file(GLOB_RECURSE TRAJ_OPT_SOURCES "src/*.cc")
 
