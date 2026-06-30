@@ -674,6 +674,7 @@ target_include_directories(plan_env PUBLIC
 
 
   /opt/ros/lyrical/include/sensor_msgs
+  /usr/include/pcl-1.15
 
 
   /usr/include/opencv4
