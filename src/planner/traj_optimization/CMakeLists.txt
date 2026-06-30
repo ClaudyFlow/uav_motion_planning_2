@@ -47,9 +47,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+set(OSQP_EIGEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp-eigen)
+find_package(OsqpEigen QUIET PATHS ${OSQP_EIGEN_DIR} NO_DEFAULT_PATH)
+
 file(GLOB_RECURSE TRAJ_OPT_SOURCES "src/*.cc")
 
 add_library(traj_optimization ${TRAJ_OPT_SOURCES})
+
+target_link_libraries(traj_optimization
+  OsqpEigen::OsqpEigen
+)
 
 target_include_directories(traj_optimization PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -58,6 +65,7 @@ target_include_directories(traj_optimization PUBLIC
   /usr/include/eigen3
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp/include/private
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp/build/codegen_src/inc/private
+  ${OSQP_EIGEN_DIR}/include
 )
 
 ament_export_dependencies(Eigen3)
