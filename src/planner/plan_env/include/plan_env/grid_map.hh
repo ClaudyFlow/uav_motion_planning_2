@@ -10,12 +10,14 @@
 #pragma endregion include_project
 #pragma region include_third
 #include <cv_bridge/cv_bridge.hpp>
-#include <geometry_msgs/PoseStamped.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include <message_filters/sync_policies/exact_time.h>
-#include <message_filters/time_synchronizer.h>
-#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <message_filters/subscriber.hpp>
+#include <message_filters/sync_policies/approximate_time.hpp>
+#include <message_filters/sync_policies/exact_time.hpp>
+#include <message_filters/time_synchronizer.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -196,12 +198,12 @@ class GridMap {
 
   // get depth image and camera pose
   void depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
-                         const geometry_msgs::PoseStampedConstPtr& pose);
+                         const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose);
   void depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
-                         const nav_msgs::OdometryConstPtr& odom);
+                         const nav_msgs::msg::Odometry::ConstSharedPtr& odom);
   void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img);
   void localCloudCallback(const sensor_msgs::PointCloud2ConstPtr& img);
-  void odomCallback(const nav_msgs::OdometryConstPtr& odom);
+  void odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr& odom);
 
   // update occupancy by raycasting
 // ROS1:   void updateOccupancyCallback(const ros::TimerEvent& /*event*/);
@@ -228,12 +230,12 @@ class GridMap {
   // geometry_msgs::PoseStamped> SyncPolicyImagePose;
 
 // ROS1:   typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,
-  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,
-                                                          nav_msgs::Odometry>
+  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::msg::Image,
+                                                          nav_msgs::msg::Odometry>
       SyncPolicyImageOdom;
 // ROS1:   typedef message_filters::sync_policies::ApproximateTime<
   typedef message_filters::sync_policies::ApproximateTime<
-      sensor_msgs::Image, geometry_msgs::PoseStamped>
+      sensor_msgs::msg::Image, geometry_msgs::msg::PoseStamped>
       SyncPolicyImagePose;
 // ROS1:   typedef shared_ptr<message_filters::Synchronizer<SyncPolicyImagePose>>
   typedef shared_ptr<message_filters::Synchronizer<SyncPolicyImagePose>>
@@ -242,29 +244,32 @@ class GridMap {
   typedef shared_ptr<message_filters::Synchronizer<SyncPolicyImageOdom>>
       SynchronizerImageOdom;
 
-  ros::NodeHandle node_;
-// ROS1:   shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
-  shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
-// ROS1:   shared_ptr<message_filters::Subscriber<geometry_msgs::PoseStamped>> pose_sub_;
-  shared_ptr<message_filters::Subscriber<geometry_msgs::PoseStamped>> pose_sub_;
-// ROS1:   shared_ptr<message_filters::Subscriber<nav_msgs::Odometry>> odom_sub_;
-  shared_ptr<message_filters::Subscriber<nav_msgs::Odometry>> odom_sub_;
+  rclcpp::Node::SharedPtr node_;
+// ROS1:   shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depth_sub_;
+  shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depth_sub_;
+// ROS1:   shared_ptr<message_filters::Subscriber<geometry_msgs::msg::PoseStamped>> pose_sub_;
+  shared_ptr<message_filters::Subscriber<geometry_msgs::msg::PoseStamped>> pose_sub_;
+// ROS1:   shared_ptr<message_filters::Subscriber<nav_msgs::msg::Odometry>> odom_sub_;
+  shared_ptr<message_filters::Subscriber<nav_msgs::msg::Odometry>> odom_sub_;
 
   SynchronizerImagePose sync_image_pose_;
   SynchronizerImageOdom sync_image_odom_;
 
 // ROS1:   ros::Subscriber indep_cloud_sub_, indep_odom_sub_;
-  rclcpp::Subscriber indep_cloud_sub_, indep_odom_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr indep_cloud_sub_;
+  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr indep_odom_sub_;
 // ROS1:   ros::Subscriber local_cloud_sub_;
-  rclcpp::Subscriber local_cloud_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr local_cloud_sub_;
 // ROS1:   ros::Publisher map_pub_, map_inf_pub_;
-  rclcpp::Publisher map_pub_, map_inf_pub_;
+  rclcpp::Publisher::SharedPtr map_pub_;
+  rclcpp::Publisher::SharedPtr map_inf_pub_;
 // ROS1:   ros::Publisher convex_obstacle_pub_;
-  rclcpp::Publisher convex_obstacle_pub_;
+  rclcpp::Publisher::SharedPtr convex_obstacle_pub_;
 // ROS1:   ros::Publisher unknown_pub_;
-  rclcpp::Publisher unknown_pub_;
+  rclcpp::Publisher::SharedPtr unknown_pub_;
 // ROS1:   ros::Timer occ_timer_, vis_timer_;
-  rclcpp::Timer occ_timer_, vis_timer_;
+  rclcpp::TimerBase::SharedPtr occ_timer_;
+  rclcpp::TimerBase::SharedPtr vis_timer_;
 
   //
   uniform_real_distribution<double> rand_noise_;

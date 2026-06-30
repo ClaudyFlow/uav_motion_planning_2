@@ -1,5 +1,6 @@
 // ROS1: #pragma region include
 #include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
 #pragma region include::header
 #include "plan_env/grid_map.hh"
 #pragma endregion include::header
@@ -24,111 +25,82 @@ void GridMap::initMap(rclcpp::Node::SharedPtr nh) {
 
   /* get parameter */
   double x_size, y_size, z_size;
-// ROS1:   node_.param("grid_map/resolution", mp_.resolution_, 0.1);
-node_->declare_parameter<mp_>("grid_map/resolution", .resolution_, 0.1);
-node_->get_parameter("grid_map/resolution", mp_);
-// ROS1:   node_.param("grid_map/map_size_x", x_size, 40.0);
-node_->declare_parameter<x_size>("grid_map/map_size_x", 40.0);
-node_->get_parameter("grid_map/map_size_x", x_size);
-// ROS1:   node_.param("grid_map/map_size_y", y_size, 40.0);
-node_->declare_parameter<y_size>("grid_map/map_size_y", 40.0);
-node_->get_parameter("grid_map/map_size_y", y_size);
-// ROS1:   node_.param("grid_map/map_size_z", z_size, 5.0);
-node_->declare_parameter<z_size>("grid_map/map_size_z", 5.0);
-node_->get_parameter("grid_map/map_size_z", z_size);
-// ROS1:   node_.param("grid_map/local_update_range_x", mp_.local_update_range_(0), 5.0);
-node_->declare_parameter<mp_>("grid_map/local_update_range_x", .local_update_range_(0);
-node_->get_parameter("grid_map/local_update_range_x", mp_);
-// ROS1:   node_.param("grid_map/local_update_range_y", mp_.local_update_range_(1), 5.0);
-node_->declare_parameter<mp_>("grid_map/local_update_range_y", .local_update_range_(1);
-node_->get_parameter("grid_map/local_update_range_y", mp_);
-// ROS1:   node_.param("grid_map/local_update_range_z", mp_.local_update_range_(2), 5.0);
-node_->declare_parameter<mp_>("grid_map/local_update_range_z", .local_update_range_(2);
-node_->get_parameter("grid_map/local_update_range_z", mp_);
-// ROS1:   node_.param("grid_map/obstacles_inflation", mp_.obstacles_inflation_, 0.099);
-node_->declare_parameter<mp_>("grid_map/obstacles_inflation", .obstacles_inflation_, 0.099);
-node_->get_parameter("grid_map/obstacles_inflation", mp_);
 
-// ROS1:   node_.param("grid_map/fx", mp_.fx_, 387.229248046875);
-node_->declare_parameter<mp_>("grid_map/fx", .fx_, 387.229248046875);
-node_->get_parameter("grid_map/fx", mp_);
-// ROS1:   node_.param("grid_map/fy", mp_.fy_, 387.229248046875);
-node_->declare_parameter<mp_>("grid_map/fy", .fy_, 387.229248046875);
-node_->get_parameter("grid_map/fy", mp_);
-// ROS1:   node_.param("grid_map/cx", mp_.cx_, 321.04638671875);
-node_->declare_parameter<mp_>("grid_map/cx", .cx_, 321.04638671875);
-node_->get_parameter("grid_map/cx", mp_);
-// ROS1:   node_.param("grid_map/cy", mp_.cy_, 243.44969177246094);
-node_->declare_parameter<mp_>("grid_map/cy", .cy_, 243.44969177246094);
-node_->get_parameter("grid_map/cy", mp_);
+  node_->declare_parameter("grid_map/resolution", mp_.resolution_);
+  node_->get_parameter("grid_map/resolution", mp_.resolution_);
 
-// ROS1:   node_.param("grid_map/use_depth_filter", mp_.use_depth_filter_, true);
-node_->declare_parameter<mp_>("grid_map/use_depth_filter", .use_depth_filter_, true);
-node_->get_parameter("grid_map/use_depth_filter", mp_);
-// ROS1:   node_.param("grid_map/depth_filter_tolerance", mp_.depth_filter_tolerance_,
-  node_.param("grid_map/depth_filter_tolerance", mp_.depth_filter_tolerance_,
-              0.15);
-// ROS1:   node_.param("grid_map/depth_filter_maxdist", mp_.depth_filter_maxdist_, 5.0);
-node_->declare_parameter<mp_>("grid_map/depth_filter_maxdist", .depth_filter_maxdist_, 5.0);
-node_->get_parameter("grid_map/depth_filter_maxdist", mp_);
-// ROS1:   node_.param("grid_map/depth_filter_mindist", mp_.depth_filter_mindist_, 0.2);
-node_->declare_parameter<mp_>("grid_map/depth_filter_mindist", .depth_filter_mindist_, 0.2);
-node_->get_parameter("grid_map/depth_filter_mindist", mp_);
-// ROS1:   node_.param("grid_map/depth_filter_margin", mp_.depth_filter_margin_, 1);
-node_->declare_parameter<mp_>("grid_map/depth_filter_margin", .depth_filter_margin_, 1);
-node_->get_parameter("grid_map/depth_filter_margin", mp_);
-// ROS1:   node_.param("grid_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_,
-  node_.param("grid_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_,
-              1000.0);
-// ROS1:   node_.param("grid_map/skip_pixel", mp_.skip_pixel_, 2);
-node_->declare_parameter<mp_>("grid_map/skip_pixel", .skip_pixel_, 2);
-node_->get_parameter("grid_map/skip_pixel", mp_);
+  node_->declare_parameter("grid_map/map_size_x", 40.0);
+  node_->get_parameter("grid_map/map_size_x", x_size);
+  node_->declare_parameter("grid_map/map_size_y", 40.0);
+  node_->get_parameter("grid_map/map_size_y", y_size);
+  node_->declare_parameter("grid_map/map_size_z", 5.0);
+  node_->get_parameter("grid_map/map_size_z", z_size);
 
-// ROS1:   node_.param("grid_map/p_hit", mp_.p_hit_, 0.70);
-node_->declare_parameter<mp_>("grid_map/p_hit", .p_hit_, 0.70);
-node_->get_parameter("grid_map/p_hit", mp_);
-// ROS1:   node_.param("grid_map/p_miss", mp_.p_miss_, 0.35);
-node_->declare_parameter<mp_>("grid_map/p_miss", .p_miss_, 0.35);
-node_->get_parameter("grid_map/p_miss", mp_);
-// ROS1:   node_.param("grid_map/p_min", mp_.p_min_, 0.12);
-node_->declare_parameter<mp_>("grid_map/p_min", .p_min_, 0.12);
-node_->get_parameter("grid_map/p_min", mp_);
-// ROS1:   node_.param("grid_map/p_max", mp_.p_max_, 0.97);
-node_->declare_parameter<mp_>("grid_map/p_max", .p_max_, 0.97);
-node_->get_parameter("grid_map/p_max", mp_);
-// ROS1:   node_.param("grid_map/p_occ", mp_.p_occ_, 0.80);
-node_->declare_parameter<mp_>("grid_map/p_occ", .p_occ_, 0.80);
-node_->get_parameter("grid_map/p_occ", mp_);
-// ROS1:   node_.param("grid_map/min_ray_length", mp_.min_ray_length_, 0.1);
-node_->declare_parameter<mp_>("grid_map/min_ray_length", .min_ray_length_, 0.1);
-node_->get_parameter("grid_map/min_ray_length", mp_);
-// ROS1:   node_.param("grid_map/max_ray_length", mp_.max_ray_length_, 4.5);
-node_->declare_parameter<mp_>("grid_map/max_ray_length", .max_ray_length_, 4.5);
-node_->get_parameter("grid_map/max_ray_length", mp_);
+  node_->declare_parameter("grid_map/local_update_range_x", mp_.local_update_range_(0));
+  node_->get_parameter("grid_map/local_update_range_x", mp_.local_update_range_(0));
+  node_->declare_parameter("grid_map/local_update_range_y", mp_.local_update_range_(1));
+  node_->get_parameter("grid_map/local_update_range_y", mp_.local_update_range_(1));
+  node_->declare_parameter("grid_map/local_update_range_z", mp_.local_update_range_(2));
+  node_->get_parameter("grid_map/local_update_range_z", mp_.local_update_range_(2));
 
-// ROS1:   node_.param("grid_map/visualization_truncate_height",
-  node_.param("grid_map/visualization_truncate_height",
-              mp_.visualization_truncate_height_, 2.4);
-// ROS1:   node_.param("grid_map/virtual_ceil_height", mp_.virtual_ceil_height_, 2.5);
-node_->declare_parameter<mp_>("grid_map/virtual_ceil_height", .virtual_ceil_height_, 2.5);
-node_->get_parameter("grid_map/virtual_ceil_height", mp_);
+  node_->declare_parameter("grid_map/obstacles_inflation", mp_.obstacles_inflation_);
+  node_->get_parameter("grid_map/obstacles_inflation", mp_.obstacles_inflation_);
 
-// ROS1:   node_.param("grid_map/show_occ_time", mp_.show_occ_time_, false);
-node_->declare_parameter<mp_>("grid_map/show_occ_time", .show_occ_time_, false);
-node_->get_parameter("grid_map/show_occ_time", mp_);
-// ROS1:   node_.param("grid_map/pose_type", mp_.pose_type_, 1);
-node_->declare_parameter<mp_>("grid_map/pose_type", .pose_type_, 1);
-node_->get_parameter("grid_map/pose_type", mp_);
+  node_->declare_parameter("grid_map/fx", mp_.fx_);
+  node_->get_parameter("grid_map/fx", mp_.fx_);
+  node_->declare_parameter("grid_map/fy", mp_.fy_);
+  node_->get_parameter("grid_map/fy", mp_.fy_);
+  node_->declare_parameter("grid_map/cx", mp_.cx_);
+  node_->get_parameter("grid_map/cx", mp_.cx_);
+  node_->declare_parameter("grid_map/cy", mp_.cy_);
+  node_->get_parameter("grid_map/cy", mp_.cy_);
 
-// ROS1:   node_.param("grid_map/frame_id", mp_.frame_id_, string("world"));
-node_->declare_parameter<mp_>("grid_map/frame_id", .frame_id_, string("world");
-node_->get_parameter("grid_map/frame_id", mp_);
-// ROS1:   node_.param("grid_map/local_map_margin", mp_.local_map_margin_, 1);
-node_->declare_parameter<mp_>("grid_map/local_map_margin", .local_map_margin_, 1);
-node_->get_parameter("grid_map/local_map_margin", mp_);
-// ROS1:   node_.param("grid_map/ground_height", mp_.ground_height_, -0.01);
-node_->declare_parameter<mp_>("grid_map/ground_height", .ground_height_, -0.01);
-node_->get_parameter("grid_map/ground_height", mp_);
+  node_->declare_parameter("grid_map/use_depth_filter", mp_.use_depth_filter_);
+  node_->get_parameter("grid_map/use_depth_filter", mp_.use_depth_filter_);
+  node_->declare_parameter("grid_map/depth_filter_tolerance", mp_.depth_filter_tolerance_);
+  node_->get_parameter("grid_map/depth_filter_tolerance", mp_.depth_filter_tolerance_);
+  node_->declare_parameter("grid_map/depth_filter_maxdist", mp_.depth_filter_maxdist_);
+  node_->get_parameter("grid_map/depth_filter_maxdist", mp_.depth_filter_maxdist_);
+  node_->declare_parameter("grid_map/depth_filter_mindist", mp_.depth_filter_mindist_);
+  node_->get_parameter("grid_map/depth_filter_mindist", mp_.depth_filter_mindist_);
+  node_->declare_parameter("grid_map/depth_filter_margin", mp_.depth_filter_margin_);
+  node_->get_parameter("grid_map/depth_filter_margin", mp_.depth_filter_margin_);
+  node_->declare_parameter("grid_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_);
+  node_->get_parameter("grid_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_);
+  node_->declare_parameter("grid_map/skip_pixel", mp_.skip_pixel_);
+  node_->get_parameter("grid_map/skip_pixel", mp_.skip_pixel_);
+
+  node_->declare_parameter("grid_map/p_hit", mp_.p_hit_);
+  node_->get_parameter("grid_map/p_hit", mp_.p_hit_);
+  node_->declare_parameter("grid_map/p_miss", mp_.p_miss_);
+  node_->get_parameter("grid_map/p_miss", mp_.p_miss_);
+  node_->declare_parameter("grid_map/p_min", mp_.p_min_);
+  node_->get_parameter("grid_map/p_min", mp_.p_min_);
+  node_->declare_parameter("grid_map/p_max", mp_.p_max_);
+  node_->get_parameter("grid_map/p_max", mp_.p_max_);
+  node_->declare_parameter("grid_map/p_occ", mp_.p_occ_);
+  node_->get_parameter("grid_map/p_occ", mp_.p_occ_);
+  node_->declare_parameter("grid_map/min_ray_length", mp_.min_ray_length_);
+  node_->get_parameter("grid_map/min_ray_length", mp_.min_ray_length_);
+  node_->declare_parameter("grid_map/max_ray_length", mp_.max_ray_length_);
+  node_->get_parameter("grid_map/max_ray_length", mp_.max_ray_length_);
+
+  node_->declare_parameter("grid_map/visualization_truncate_height", mp_.visualization_truncate_height_);
+  node_->get_parameter("grid_map/visualization_truncate_height", mp_.visualization_truncate_height_);
+  node_->declare_parameter("grid_map/virtual_ceil_height", mp_.virtual_ceil_height_);
+  node_->get_parameter("grid_map/virtual_ceil_height", mp_.virtual_ceil_height_);
+
+  node_->declare_parameter("grid_map/show_occ_time", mp_.show_occ_time_);
+  node_->get_parameter("grid_map/show_occ_time", mp_.show_occ_time_);
+  node_->declare_parameter("grid_map/pose_type", mp_.pose_type_);
+  node_->get_parameter("grid_map/pose_type", mp_.pose_type_);
+
+  node_->declare_parameter("grid_map/frame_id", mp_.frame_id_);
+  node_->get_parameter("grid_map/frame_id", mp_.frame_id_);
+  node_->declare_parameter("grid_map/local_map_margin", mp_.local_map_margin_);
+  node_->get_parameter("grid_map/local_map_margin", mp_.local_map_margin_);
+  node_->declare_parameter("grid_map/ground_height", mp_.ground_height_);
+  node_->get_parameter("grid_map/ground_height", mp_.ground_height_);
 
   mp_.resolution_inv_ = 1 / mp_.resolution_;
   mp_.map_origin_ =
@@ -154,8 +126,6 @@ node_->get_parameter("grid_map/ground_height", mp_);
   mp_.map_min_boundary_ = mp_.map_origin_;
   mp_.map_max_boundary_ = mp_.map_origin_ + mp_.map_size_;
 
-  // initialize data buffers
-
   int buffer_size =
       mp_.map_voxel_num_(0) * mp_.map_voxel_num_(1) * mp_.map_voxel_num_(2);
 
@@ -175,55 +145,66 @@ node_->get_parameter("grid_map/ground_height", mp_);
   md_.cam2body_ << 0.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0,
       -0.02, 0.0, 0.0, 0.0, 1.0;
 
-  /* init callback */
-
-  // use depth image and pose stamped or odometry
-// ROS1:   depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(
-  depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(
-      node_, "/grid_map/depth", 50));
+  /* init callback: ROS2 subscriptions and publishers */
 
   if (mp_.pose_type_ == POSE_STAMPED) {
-// ROS1:     pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::PoseStamped>(
-    pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::PoseStamped>(
+    // ROS2: use message_filters with approximate time sync
+    depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::msg::Image>(
+        node_, "/grid_map/depth", 50));
+    pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::msg::PoseStamped>(
         node_, "/grid_map/pose", 25));
 
     sync_image_pose_.reset(
-// ROS1:         new message_filters::Synchronizer<SyncPolicyImagePose>(
         new message_filters::Synchronizer<SyncPolicyImagePose>(
             SyncPolicyImagePose(100), *depth_sub_, *pose_sub_));
     sync_image_pose_->registerCallback(
-        boost::bind(&GridMap::depthPoseCallback, this, _1, _2));
+        [this](const sensor_msgs::msg::Image::SharedPtr& img,
+               const geometry_msgs::msg::PoseStamped::SharedPtr& pose) {
+          this->depthPoseCallback(img, pose);
+        });
   } else if (mp_.pose_type_ == ODOMETRY) {
-// ROS1:     odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(
-    odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(
+    depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::msg::Image>(
+        node_, "/grid_map/depth", 50));
+    odom_sub_.reset(new message_filters::Subscriber<nav_msgs::msg::Odometry>(
         node_, "/grid_map/odom", 100));
 
     sync_image_odom_.reset(
-// ROS1:         new message_filters::Synchronizer<SyncPolicyImageOdom>(
         new message_filters::Synchronizer<SyncPolicyImageOdom>(
             SyncPolicyImageOdom(100), *depth_sub_, *odom_sub_));
     sync_image_odom_->registerCallback(
-        boost::bind(&GridMap::depthOdomCallback, this, _1, _2));
+        [this](const sensor_msgs::msg::Image::SharedPtr& img,
+               const nav_msgs::msg::Odometry::SharedPtr& odom) {
+          this->depthOdomCallback(img, odom);
+        });
   }
 
-  // use odometry and point cloud
-  indep_cloud_sub_ = node_.subscribe<sensor_msgs::PointCloud2>(
-      "/grid_map/cloud", 10, &GridMap::cloudCallback, this);
-  indep_odom_sub_ = node_.subscribe<nav_msgs::Odometry>(
-      "/grid_map/odom", 10, &GridMap::odomCallback, this);
+  // independent subscribers
+  indep_cloud_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(
+      "/grid_map/cloud", 10,
+      [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+        this->cloudCallback(msg);
+      });
+  indep_odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(
+      "/grid_map/odom", 10,
+      [this](const nav_msgs::msg::Odometry::SharedPtr msg) {
+        this->odomCallback(msg);
+      });
 
-  occ_timer_ = node_.createTimer(ros::Duration(0.05),
-                                 &GridMap::updateOccupancyCallback, this);
-  vis_timer_ =
-      node_.createTimer(ros::Duration(0.05), &GridMap::visCallback, this);
+  // timers: ROS2 uses create_wall_timer
+  occ_timer_ = node_->create_wall_timer(
+      std::chrono::duration<double>(0.05),
+      [this]() { this->updateOccupancyCallback(); });
+  vis_timer_ = node_->create_wall_timer(
+      std::chrono::duration<double>(0.05),
+      [this]() { this->visCallback(); });
 
-  map_pub_ =
-      node_.advertise<sensor_msgs::PointCloud2>("/grid_map/occupancy", 10);
-  map_inf_pub_ = node_.advertise<sensor_msgs::PointCloud2>(
+  // publishers
+  map_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>(
+      "/grid_map/occupancy", 10);
+  map_inf_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>(
       "/grid_map/occupancy_inflate", 10);
-
-  unknown_pub_ =
-      node_.advertise<sensor_msgs::PointCloud2>("/grid_map/unknown", 10);
+  unknown_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>(
+      "/grid_map/unknown", 10);
 
   md_.occ_need_update_ = false;
   md_.local_updated_ = false;
@@ -396,7 +377,7 @@ void GridMap::raycastProcess() {
   // if (md_.proj_points_.size() == 0)
   if (md_.proj_points_cnt == 0) return;
 
-  ros::Time t1, t2;
+  rclcpp::Time t1, t2;
 
   md_.raycast_num_ += 1;
 
@@ -729,7 +710,7 @@ void GridMap::depthPoseCallback(
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
 
-  if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1) {
+  if (img->encoding == "32FC1") {
     (cv_ptr->image)
         .convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
   }
@@ -855,7 +836,7 @@ void GridMap::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img) {
 }
 
 void GridMap::publishMap() {
-  if (map_pub_.getNumSubscribers() <= 0) return;
+  if (map_pub_->count() <= 0) return;
 
   pcl::PointXYZ pt;
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -889,14 +870,15 @@ void GridMap::publishMap() {
   cloud.height = 1;
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
 
   pcl::toROSMsg(cloud, cloud_msg);
-  map_pub_.publish(cloud_msg);
+  cloud_msg.header.frame_id = mp_.frame_id_;
+  map_pub_->publish(std::make_shared<sensor_msgs::msg::PointCloud2>(cloud_msg));
 }
 
 void GridMap::publishMapInflate(bool all_info) {
-  if (map_inf_pub_.getNumSubscribers() <= 0) return;
+  if (map_inf_pub_->count() <= 0) return;
 
   pcl::PointXYZ pt;
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -932,10 +914,11 @@ void GridMap::publishMapInflate(bool all_info) {
   cloud.height = 1;
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
 
   pcl::toROSMsg(cloud, cloud_msg);
-  map_inf_pub_.publish(cloud_msg);
+  cloud_msg.header.frame_id = mp_.frame_id_;
+  map_inf_pub_->publish(std::make_shared<sensor_msgs::msg::PointCloud2>(cloud_msg));
 
   // ROS_INFO("pub map");
 }
@@ -971,9 +954,10 @@ void GridMap::publishUnknown() {
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
 
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
-  unknown_pub_.publish(cloud_msg);
+  cloud_msg.header.frame_id = mp_.frame_id_;
+  unknown_pub_->publish(std::make_shared<sensor_msgs::msg::PointCloud2>(cloud_msg));
 }
 
 bool GridMap::odomValid() { return md_.has_odom_; }
@@ -1014,7 +998,7 @@ void GridMap::depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
-  if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1) {
+  if (img->encoding == "32FC1") {
     (cv_ptr->image)
         .convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
   }
