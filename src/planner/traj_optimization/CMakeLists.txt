@@ -55,6 +55,7 @@ target_include_directories(traj_optimization PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp/include/public
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rd/osqp/build/include/public
+  /usr/include/eigen3
 )
 
 ament_export_dependencies(Eigen3)
