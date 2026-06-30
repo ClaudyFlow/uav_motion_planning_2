@@ -225,11 +225,11 @@ class SDFMap {
 
   // update occupancy by raycasting, and update ESDF
 // ROS1:   void updateOccupancyCallback(const ros::TimerEvent& /*event*/);
-  void updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/);
+  void updateOccupancyCallback();
 // ROS1:   void updateESDFCallback(const ros::TimerEvent& /*event*/);
-  void updateESDFCallback(const rclcpp::TimerEvent& /*event*/);
+  void updateESDFCallback();
 // ROS1:   void visCallback(const ros::TimerEvent& /*event*/);
-  void visCallback(const rclcpp::TimerEvent& /*event*/);
+  void visCallback();
 
   // main update process
   void projectDepthImage();
