@@ -10,14 +10,14 @@
 #pragma endregion include_project
 #pragma region include_third
 #include <cv_bridge/cv_bridge.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <message_filters/subscriber.hpp>
-#include <message_filters/sync_policies/approximate_time.hpp>
-#include <message_filters/sync_policies/exact_time.hpp>
-#include <message_filters/time_synchronizer.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/image.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <geometry_msgs/geometry_msgs/msg/pose_stamped.hpp>
+#include <message_filters/message_filters/subscriber.hpp>
+#include <message_filters/message_filters/sync_policies/approximate_time.hpp>
+#include <message_filters/message_filters/sync_policies/exact_time.hpp>
+#include <message_filters/message_filters/time_synchronizer.hpp>
+#include <nav_msgs/nav_msgs/msg/odometry.hpp>
+#include <sensor_msgs/sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/sensor_msgs/msg/point_cloud2.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
