@@ -25,7 +25,8 @@
 # #rosbuild_gensrv()
 #
 # #common commands for building c++ executables and libraries
-# #-osbuild_add_library(${PROJECT_NAME} src/example.cpp)
+# #-
+osbuild_add_library(${PROJECT_NAME} src/example.cpp)
 # #target_link_libraries(${PROJECT_NAME} another_library)
 # #rosbuild_add_boost_directories()
 # #rosbuild_link_boost(${PROJECT_NAME} thread)
@@ -154,5 +155,6 @@ target_include_directories(encode_msgs PUBLIC
 )
 
 ament_export_dependencies(std_msgs geometry_msgs)
+ament_export_dependencies(rosidl_default_generators)
 ament_export_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 ament_package()
