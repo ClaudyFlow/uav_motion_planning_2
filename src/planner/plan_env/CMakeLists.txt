@@ -640,7 +640,7 @@ add_library(plan_env ${PLAN_ENV_SOURCES})
 
 
 
-ament_target_dependencies(plan_env rclcpp std_msgs service_msgs Eigen3 cv_bridge geometry_msgs sensor_msgs)
+ament_target_dependencies(plan_env rclcpp std_msgs service_msgs Eigen3 cv_bridge geometry_msgs visualization_msgs sensor_msgs)
 
 
 
@@ -685,6 +685,7 @@ target_include_directories(plan_env PUBLIC
   /opt/ros/lyrical/include
   /opt/ros/lyrical/include/geometry_msgs
   /opt/ros/lyrical/include/nav_msgs
+  /opt/ros/lyrical/include/visualization_msgs
   /opt/ros/lyrical/include/sensor_msgs
   /opt/ros/lyrical/include/message_filters
   /opt/ros/lyrical/include/message_filters/message_filters
