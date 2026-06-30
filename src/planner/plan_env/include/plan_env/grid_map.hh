@@ -197,12 +197,12 @@ class GridMap {
   MappingData md_;
 
   // get depth image and camera pose
-  void depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
+  void depthPoseCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
                          const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose);
-  void depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
+  void depthOdomCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
                          const nav_msgs::msg::Odometry::ConstSharedPtr& odom);
-  void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img);
-  void localCloudCallback(const sensor_msgs::PointCloud2ConstPtr& img);
+  void cloudCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& img);
+  void localCloudCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& img);
   void odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr& odom);
 
   // update occupancy by raycasting

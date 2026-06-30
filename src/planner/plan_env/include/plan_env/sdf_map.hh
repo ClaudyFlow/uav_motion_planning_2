@@ -3,12 +3,12 @@
 #define SRC_PLANNER_PLAN_ENV_INCLUDE_PLAN_ENV_SDF_MAP
 
 #include <cv_bridge/cv_bridge.hpp>
-#include <geometry_msgs/PoseStamped.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include <message_filters/sync_policies/exact_time.h>
-#include <message_filters/time_synchronizer.h>
-#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/geometry_msgs/msg/pose_stamped.hpp>
+#include <message_filters/message_filters/subscriber.hpp>
+#include <message_filters/message_filters/sync_policies/approximate_time.hpp>
+#include <message_filters/message_filters/sync_policies/exact_time.hpp>
+#include <message_filters/message_filters/time_synchronizer.hpp>
+#include <nav_msgs/nav_msgs/msg/odometry.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -214,14 +214,14 @@ class SDFMap {
                 int dim);
 
   // get depth image and camera pose
-  void depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
-                         const geometry_msgs::PoseStampedConstPtr& pose);
-  void depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
-                         const nav_msgs::OdometryConstPtr& odom);
-  void depthCallback(const sensor_msgs::ImageConstPtr& img);
-  void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img);
-  void poseCallback(const geometry_msgs::PoseStampedConstPtr& pose);
-  void odomCallback(const nav_msgs::OdometryConstPtr& odom);
+  void depthPoseCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
+                         const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose);
+  void depthOdomCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
+                         const nav_msgs::msg::Odometry::ConstSharedPtr& odom);
+  void depthCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img);
+  void cloudCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& img);
+  void poseCallback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose);
+  void odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr& odom);
 
   // update occupancy by raycasting, and update ESDF
 // ROS1:   void updateOccupancyCallback(const ros::TimerEvent& /*event*/);
@@ -263,7 +263,7 @@ class SDFMap {
   typedef shared_ptr<message_filters::Synchronizer<SyncPolicyImageOdom>>
       SynchronizerImageOdom;
 
-  ros::NodeHandle node_;
+  rclcpp::Node::SharedPtr node_;
 // ROS1:   shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
   shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
 // ROS1:   shared_ptr<message_filters::Subscriber<geometry_msgs::PoseStamped>> pose_sub_;
