@@ -47,6 +47,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+file(GLOB_RECURSE TRAJ_OPT_SOURCES "src/*.cc")
+
 add_library(traj_optimization ${TRAJ_OPT_SOURCES})
 
 ament_export_dependencies(Eigen3)
