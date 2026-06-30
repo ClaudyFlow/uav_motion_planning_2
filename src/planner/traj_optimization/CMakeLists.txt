@@ -46,7 +46,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(osqp REQUIRED)
 
 file(GLOB_RECURSE TRAJ_OPT_SOURCES "src/*.cc")
 
