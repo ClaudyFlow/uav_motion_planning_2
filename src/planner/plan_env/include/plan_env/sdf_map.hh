@@ -249,12 +249,12 @@ class SDFMap {
   // message_filters::sync_policies::ExactTime<sensor_msgs::Image,
   // geometry_msgs::PoseStamped> SyncPolicyImagePose;
 // ROS1:   typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,
-  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,
-                                                          nav_msgs::Odometry>
+  typedef message_filters::sync_policies::ApproximateTime<
+      sensor_msgs::msg::Image, nav_msgs::msg::Odometry>
       SyncPolicyImageOdom;
 // ROS1:   typedef message_filters::sync_policies::ApproximateTime<
   typedef message_filters::sync_policies::ApproximateTime<
-      sensor_msgs::Image, geometry_msgs::PoseStamped>
+      sensor_msgs::msg::Image, geometry_msgs::msg::PoseStamped>
       SyncPolicyImagePose;
 // ROS1:   typedef shared_ptr<message_filters::Synchronizer<SyncPolicyImagePose>>
   typedef shared_ptr<message_filters::Synchronizer<SyncPolicyImagePose>>
@@ -265,23 +265,23 @@ class SDFMap {
 
   rclcpp::Node::SharedPtr node_;
 // ROS1:   shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
-  shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> depth_sub_;
+  shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depth_sub_;
 // ROS1:   shared_ptr<message_filters::Subscriber<geometry_msgs::PoseStamped>> pose_sub_;
-  shared_ptr<message_filters::Subscriber<geometry_msgs::PoseStamped>> pose_sub_;
+  shared_ptr<message_filters::Subscriber<geometry_msgs::msg::PoseStamped>> pose_sub_;
 // ROS1:   shared_ptr<message_filters::Subscriber<nav_msgs::Odometry>> odom_sub_;
-  shared_ptr<message_filters::Subscriber<nav_msgs::Odometry>> odom_sub_;
+  shared_ptr<message_filters::Subscriber<nav_msgs::msg::Odometry>> odom_sub_;
   SynchronizerImagePose sync_image_pose_;
   SynchronizerImageOdom sync_image_odom_;
 
 // ROS1:   ros::Subscriber indep_depth_sub_, indep_odom_sub_, indep_pose_sub_,
-  rclcpp::Subscriber indep_depth_sub_, indep_odom_sub_, indep_pose_sub_,
-      indep_cloud_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr indep_cloud_sub_;
 // ROS1:   ros::Publisher map_pub_, esdf_pub_, map_inf_pub_, update_range_pub_;
-  rclcpp::Publisher map_pub_, esdf_pub_, map_inf_pub_, update_range_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_pub_, esdf_pub_, map_inf_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr update_range_pub_;
 // ROS1:   ros::Publisher unknown_pub_, depth_pub_;
-  rclcpp::Publisher unknown_pub_, depth_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr unknown_pub_, depth_pub_;
 // ROS1:   ros::Timer occ_timer_, esdf_timer_, vis_timer_;
-  rclcpp::Timer occ_timer_, esdf_timer_, vis_timer_;
+  rclcpp::Timer::SharedPtr occ_timer_, esdf_timer_, vis_timer_;
 
   //
   uniform_real_distribution<double> rand_noise_;
@@ -507,15 +507,10 @@ inline void SDFMap::inflatePoint(const Eigen::Vector3i& pt, int step,
   //   pts[num++] = Eigen::Vector3i(pt(0) + x, pt(1), pt(2));
   // }
   // for (int y = -step; y <= step; ++y)
-  // {
   //   if (y == 0)
-  //     continue;
   //   pts[num++] = Eigen::Vector3i(pt(0), pt(1) + y, pt(2));
-  // }
   // for (int z = -1; z <= 1; ++z)
-  // {
   //   pts[num++] = Eigen::Vector3i(pt(0), pt(1), pt(2) + z);
-  // }
 
   /* ---------- all inflate ---------- */
   for (int x = -step; x <= step; ++x)

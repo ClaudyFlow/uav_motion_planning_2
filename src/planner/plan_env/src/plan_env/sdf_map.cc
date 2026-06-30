@@ -1,142 +1,103 @@
-// ROS1: #pragma region include
-#include <rclcpp/rclcpp.hpp>
-#pragma region include::header
+// ROS1: #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/time.hpp>
 #include "plan_env/sdf_map.hh"
-#pragma endregion include::header
-#pragma region include::project
 #include "plan_env/raycast.hh"
-#pragma endregion include::project
-#pragma region include::third
 #include <visualization_msgs/visualization_msgs/msg/marker.hpp>
-#pragma endregion include::third
-#pragma region include::standard
+#include <functional>
 
-#pragma endregion include::standard
-#pragma endregion include
 
 // #define current_img_ md_.depth_image_[image_cnt_ & 1]
-// #define last_img_ md_.depth_image_[!(image_cnt_ & 1)]
-
 // ROS1: void SDFMap::initMap(ros::NodeHandle& nh) {
 void SDFMap::initMap(rclcpp::Node::SharedPtr nh) {
   node_ = nh;
 
   /* get parameter */
   double x_size, y_size, z_size;
-// ROS1:   node_.param("sdf_map/resolution", mp_.resolution_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/resolution", .resolution_, -1.0);
-node_->get_parameter("sdf_map/resolution", mp_);
-// ROS1:   node_.param("sdf_map/map_size_x", x_size, -1.0);
-node_->declare_parameter<x_size>("sdf_map/map_size_x", -1.0);
-node_->get_parameter("sdf_map/map_size_x", x_size);
-// ROS1:   node_.param("sdf_map/map_size_y", y_size, -1.0);
-node_->declare_parameter<y_size>("sdf_map/map_size_y", -1.0);
-node_->get_parameter("sdf_map/map_size_y", y_size);
-// ROS1:   node_.param("sdf_map/map_size_z", z_size, -1.0);
-node_->declare_parameter<z_size>("sdf_map/map_size_z", -1.0);
-node_->get_parameter("sdf_map/map_size_z", z_size);
-// ROS1:   node_.param("sdf_map/local_update_range_x", mp_.local_update_range_(0), -1.0);
-node_->declare_parameter<mp_>("sdf_map/local_update_range_x", .local_update_range_(0);
-node_->get_parameter("sdf_map/local_update_range_x", mp_);
-// ROS1:   node_.param("sdf_map/local_update_range_y", mp_.local_update_range_(1), -1.0);
-node_->declare_parameter<mp_>("sdf_map/local_update_range_y", .local_update_range_(1);
-node_->get_parameter("sdf_map/local_update_range_y", mp_);
-// ROS1:   node_.param("sdf_map/local_update_range_z", mp_.local_update_range_(2), -1.0);
-node_->declare_parameter<mp_>("sdf_map/local_update_range_z", .local_update_range_(2);
-node_->get_parameter("sdf_map/local_update_range_z", mp_);
-// ROS1:   node_.param("sdf_map/obstacles_inflation", mp_.obstacles_inflation_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/obstacles_inflation", .obstacles_inflation_, -1.0);
-node_->get_parameter("sdf_map/obstacles_inflation", mp_);
 
-// ROS1:   node_.param("sdf_map/fx", mp_.fx_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/fx", .fx_, -1.0);
-node_->get_parameter("sdf_map/fx", mp_);
-// ROS1:   node_.param("sdf_map/fy", mp_.fy_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/fy", .fy_, -1.0);
-node_->get_parameter("sdf_map/fy", mp_);
-// ROS1:   node_.param("sdf_map/cx", mp_.cx_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/cx", .cx_, -1.0);
-node_->get_parameter("sdf_map/cx", mp_);
-// ROS1:   node_.param("sdf_map/cy", mp_.cy_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/cy", .cy_, -1.0);
-node_->get_parameter("sdf_map/cy", mp_);
+  node_->declare_parameter<double>("sdf_map/resolution", -1.0);
+  node_->get_parameter("sdf_map/resolution", mp_.resolution_);
 
-// ROS1:   node_.param("sdf_map/use_depth_filter", mp_.use_depth_filter_, true);
-node_->declare_parameter<mp_>("sdf_map/use_depth_filter", .use_depth_filter_, true);
-node_->get_parameter("sdf_map/use_depth_filter", mp_);
-// ROS1:   node_.param("sdf_map/depth_filter_tolerance", mp_.depth_filter_tolerance_,
-  node_.param("sdf_map/depth_filter_tolerance", mp_.depth_filter_tolerance_,
-              -1.0);
-// ROS1:   node_.param("sdf_map/depth_filter_maxdist", mp_.depth_filter_maxdist_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/depth_filter_maxdist", .depth_filter_maxdist_, -1.0);
-node_->get_parameter("sdf_map/depth_filter_maxdist", mp_);
-// ROS1:   node_.param("sdf_map/depth_filter_mindist", mp_.depth_filter_mindist_, -1.0);
-node_->declare_parameter<mp_>("sdf_map/depth_filter_mindist", .depth_filter_mindist_, -1.0);
-node_->get_parameter("sdf_map/depth_filter_mindist", mp_);
-// ROS1:   node_.param("sdf_map/depth_filter_margin", mp_.depth_filter_margin_, -1);
-node_->declare_parameter<mp_>("sdf_map/depth_filter_margin", .depth_filter_margin_, -1);
-node_->get_parameter("sdf_map/depth_filter_margin", mp_);
-// ROS1:   node_.param("sdf_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_,
-  node_.param("sdf_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_,
-              -1.0);
-// ROS1:   node_.param("sdf_map/skip_pixel", mp_.skip_pixel_, -1);
-node_->declare_parameter<mp_>("sdf_map/skip_pixel", .skip_pixel_, -1);
-node_->get_parameter("sdf_map/skip_pixel", mp_);
+  node_->declare_parameter<double>("sdf_map/map_size_x", -1.0);
+  node_->get_parameter("sdf_map/map_size_x", x_size);
+  node_->declare_parameter<double>("sdf_map/map_size_y", -1.0);
+  node_->get_parameter("sdf_map/map_size_y", y_size);
+  node_->declare_parameter<double>("sdf_map/map_size_z", -1.0);
+  node_->get_parameter("sdf_map/map_size_z", z_size);
 
-// ROS1:   node_.param("sdf_map/p_hit", mp_.p_hit_, 0.70);
-node_->declare_parameter<mp_>("sdf_map/p_hit", .p_hit_, 0.70);
-node_->get_parameter("sdf_map/p_hit", mp_);
-// ROS1:   node_.param("sdf_map/p_miss", mp_.p_miss_, 0.35);
-node_->declare_parameter<mp_>("sdf_map/p_miss", .p_miss_, 0.35);
-node_->get_parameter("sdf_map/p_miss", mp_);
-// ROS1:   node_.param("sdf_map/p_min", mp_.p_min_, 0.12);
-node_->declare_parameter<mp_>("sdf_map/p_min", .p_min_, 0.12);
-node_->get_parameter("sdf_map/p_min", mp_);
-// ROS1:   node_.param("sdf_map/p_max", mp_.p_max_, 0.97);
-node_->declare_parameter<mp_>("sdf_map/p_max", .p_max_, 0.97);
-node_->get_parameter("sdf_map/p_max", mp_);
-// ROS1:   node_.param("sdf_map/p_occ", mp_.p_occ_, 0.80);
-node_->declare_parameter<mp_>("sdf_map/p_occ", .p_occ_, 0.80);
-node_->get_parameter("sdf_map/p_occ", mp_);
-// ROS1:   node_.param("sdf_map/min_ray_length", mp_.min_ray_length_, -0.1);
-node_->declare_parameter<mp_>("sdf_map/min_ray_length", .min_ray_length_, -0.1);
-node_->get_parameter("sdf_map/min_ray_length", mp_);
-// ROS1:   node_.param("sdf_map/max_ray_length", mp_.max_ray_length_, -0.1);
-node_->declare_parameter<mp_>("sdf_map/max_ray_length", .max_ray_length_, -0.1);
-node_->get_parameter("sdf_map/max_ray_length", mp_);
+  node_->declare_parameter<double>("sdf_map/local_update_range_x", -1.0);
+  node_->get_parameter("sdf_map/local_update_range_x", mp_.local_update_range_(0));
+  node_->declare_parameter<double>("sdf_map/local_update_range_y", -1.0);
+  node_->get_parameter("sdf_map/local_update_range_y", mp_.local_update_range_(1));
+  node_->declare_parameter<double>("sdf_map/local_update_range_z", -1.0);
+  node_->get_parameter("sdf_map/local_update_range_z", mp_.local_update_range_(2));
 
-// ROS1:   node_.param("sdf_map/esdf_slice_height", mp_.esdf_slice_height_, -0.1);
-node_->declare_parameter<mp_>("sdf_map/esdf_slice_height", .esdf_slice_height_, -0.1);
-node_->get_parameter("sdf_map/esdf_slice_height", mp_);
-// ROS1:   node_.param("sdf_map/visualization_truncate_height",
-  node_.param("sdf_map/visualization_truncate_height",
-              mp_.visualization_truncate_height_, -0.1);
-// ROS1:   node_.param("sdf_map/virtual_ceil_height", mp_.virtual_ceil_height_, -0.1);
-node_->declare_parameter<mp_>("sdf_map/virtual_ceil_height", .virtual_ceil_height_, -0.1);
-node_->get_parameter("sdf_map/virtual_ceil_height", mp_);
+  node_->declare_parameter<double>("sdf_map/obstacles_inflation", -1.0);
+  node_->get_parameter("sdf_map/obstacles_inflation", mp_.obstacles_inflation_);
 
-// ROS1:   node_.param("sdf_map/show_occ_time", mp_.show_occ_time_, false);
-node_->declare_parameter<mp_>("sdf_map/show_occ_time", .show_occ_time_, false);
-node_->get_parameter("sdf_map/show_occ_time", mp_);
-// ROS1:   node_.param("sdf_map/show_esdf_time", mp_.show_esdf_time_, false);
-node_->declare_parameter<mp_>("sdf_map/show_esdf_time", .show_esdf_time_, false);
-node_->get_parameter("sdf_map/show_esdf_time", mp_);
-// ROS1:   node_.param("sdf_map/pose_type", mp_.pose_type_, 1);
-node_->declare_parameter<mp_>("sdf_map/pose_type", .pose_type_, 1);
-node_->get_parameter("sdf_map/pose_type", mp_);
+  node_->declare_parameter<double>("sdf_map/fx", -1.0);
+  node_->get_parameter("sdf_map/fx", mp_.fx_);
+  node_->declare_parameter<double>("sdf_map/fy", -1.0);
+  node_->get_parameter("sdf_map/fy", mp_.fy_);
+  node_->declare_parameter<double>("sdf_map/cx", -1.0);
+  node_->get_parameter("sdf_map/cx", mp_.cx_);
+  node_->declare_parameter<double>("sdf_map/cy", -1.0);
+  node_->get_parameter("sdf_map/cy", mp_.cy_);
 
-// ROS1:   node_.param("sdf_map/frame_id", mp_.frame_id_, string("world"));
-node_->declare_parameter<mp_>("sdf_map/frame_id", .frame_id_, string("world");
-node_->get_parameter("sdf_map/frame_id", mp_);
-// ROS1:   node_.param("sdf_map/local_bound_inflate", mp_.local_bound_inflate_, 1.0);
-node_->declare_parameter<mp_>("sdf_map/local_bound_inflate", .local_bound_inflate_, 1.0);
-node_->get_parameter("sdf_map/local_bound_inflate", mp_);
-// ROS1:   node_.param("sdf_map/local_map_margin", mp_.local_map_margin_, 1);
-node_->declare_parameter<mp_>("sdf_map/local_map_margin", .local_map_margin_, 1);
-node_->get_parameter("sdf_map/local_map_margin", mp_);
-// ROS1:   node_.param("sdf_map/ground_height", mp_.ground_height_, 1.0);
-node_->declare_parameter<mp_>("sdf_map/ground_height", .ground_height_, 1.0);
-node_->get_parameter("sdf_map/ground_height", mp_);
+  node_->declare_parameter<bool>("sdf_map/use_depth_filter", true);
+  node_->get_parameter("sdf_map/use_depth_filter", mp_.use_depth_filter_);
+
+  node_->declare_parameter<double>("sdf_map/depth_filter_tolerance", -1.0);
+  node_->get_parameter("sdf_map/depth_filter_tolerance", mp_.depth_filter_tolerance_);
+  node_->declare_parameter<double>("sdf_map/depth_filter_maxdist", -1.0);
+  node_->get_parameter("sdf_map/depth_filter_maxdist", mp_.depth_filter_maxdist_);
+  node_->declare_parameter<double>("sdf_map/depth_filter_mindist", -1.0);
+  node_->get_parameter("sdf_map/depth_filter_mindist", mp_.depth_filter_mindist_);
+  node_->declare_parameter<int>("sdf_map/depth_filter_margin", -1);
+  node_->get_parameter("sdf_map/depth_filter_margin", mp_.depth_filter_margin_);
+  node_->declare_parameter<double>("sdf_map/k_depth_scaling_factor", -1.0);
+  node_->get_parameter("sdf_map/k_depth_scaling_factor", mp_.k_depth_scaling_factor_);
+  node_->declare_parameter<int>("sdf_map/skip_pixel", -1);
+  node_->get_parameter("sdf_map/skip_pixel", mp_.skip_pixel_);
+
+  node_->declare_parameter<double>("sdf_map/p_hit", 0.70);
+  node_->get_parameter("sdf_map/p_hit", mp_.p_hit_);
+  node_->declare_parameter<double>("sdf_map/p_miss", 0.35);
+  node_->get_parameter("sdf_map/p_miss", mp_.p_miss_);
+  node_->declare_parameter<double>("sdf_map/p_min", 0.12);
+  node_->get_parameter("sdf_map/p_min", mp_.p_min_);
+  node_->declare_parameter<double>("sdf_map/p_max", 0.97);
+  node_->get_parameter("sdf_map/p_max", mp_.p_max_);
+  node_->declare_parameter<double>("sdf_map/p_occ", 0.80);
+  node_->get_parameter("sdf_map/p_occ", mp_.p_occ_);
+  node_->declare_parameter<double>("sdf_map/min_ray_length", -0.1);
+  node_->get_parameter("sdf_map/min_ray_length", mp_.min_ray_length_);
+  node_->declare_parameter<double>("sdf_map/max_ray_length", -0.1);
+  node_->get_parameter("sdf_map/max_ray_length", mp_.max_ray_length_);
+
+  node_->declare_parameter<double>("sdf_map/esdf_slice_height", -0.1);
+  node_->get_parameter("sdf_map/esdf_slice_height", mp_.esdf_slice_height_);
+  node_->declare_parameter<double>("sdf_map/virtual_ceil_height", -0.1);
+  node_->get_parameter("sdf_map/virtual_ceil_height", mp_.virtual_ceil_height_);
+  node_->declare_parameter<double>("sdf_map/visualization_truncate_height", -0.1);
+  node_->get_parameter("sdf_map/visualization_truncate_height", mp_.visualization_truncate_height_);
+  node_->declare_parameter<std::string>("sdf_map/map_input", "pose_depth");
+  node_->get_parameter("sdf_map/map_input", mp_.map_input_);
+
+  node_->declare_parameter<bool>("sdf_map/show_occ_time", false);
+  node_->get_parameter("sdf_map/show_occ_time", mp_.show_occ_time_);
+  node_->declare_parameter<bool>("sdf_map/show_esdf_time", false);
+  node_->get_parameter("sdf_map/show_esdf_time", mp_.show_esdf_time_);
+  node_->declare_parameter<int>("sdf_map/pose_type", 1);
+  node_->get_parameter("sdf_map/pose_type", mp_.pose_type_);
+
+  node_->declare_parameter<std::string>("sdf_map/frame_id", "world");
+  node_->get_parameter("sdf_map/frame_id", mp_.frame_id_);
+  node_->declare_parameter<double>("sdf_map/local_bound_inflate", 1.0);
+  node_->get_parameter("sdf_map/local_bound_inflate", mp_.local_bound_inflate_);
+  node_->declare_parameter<int>("sdf_map/local_map_margin", 1);
+  node_->get_parameter("sdf_map/local_map_margin", mp_.local_map_margin_);
+  node_->declare_parameter<double>("sdf_map/ground_height", 1.0);
+  node_->get_parameter("sdf_map/ground_height", mp_.ground_height_);
 
   mp_.local_bound_inflate_ = max(mp_.resolution_, mp_.local_bound_inflate_);
   mp_.resolution_inv_ = 1 / mp_.resolution_;
@@ -194,61 +155,57 @@ node_->get_parameter("sdf_map/ground_height", mp_);
 
   /* init callback */
 
-// ROS1:   depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(
-  depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(
-      node_, "/sdf_map/depth", 50));
+  rclcpp::QoS qos(10);
 
   if (mp_.pose_type_ == POSE_STAMPED) {
-// ROS1:     pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::PoseStamped>(
-    pose_sub_.reset(new message_filters::Subscriber<geometry_msgs::PoseStamped>(
-        node_, "/sdf_map/pose", 25));
-
-    sync_image_pose_.reset(
-// ROS1:         new message_filters::Synchronizer<SyncPolicyImagePose>(
-        new message_filters::Synchronizer<SyncPolicyImagePose>(
-            SyncPolicyImagePose(100), *depth_sub_, *pose_sub_));
+    depth_sub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::Image>>(
+        node_, "/sdf_map/depth", qos);
+    pose_sub_ = std::make_shared<message_filters::Subscriber<geometry_msgs::msg::PoseStamped>>(
+        node_, "/sdf_map/pose", qos);
+    sync_image_pose_ = std::make_shared<SynchronizerImagePose>(
+        SynchronizerImagePose(100), *depth_sub_, *pose_sub_);
     sync_image_pose_->registerCallback(
-        boost::bind(&SDFMap::depthPoseCallback, this, _1, _2));
+        std::bind(&SDFMap::depthPoseCallback, this, std::placeholders::_1, std::placeholders::_2));
 
   } else if (mp_.pose_type_ == ODOMETRY) {
-// ROS1:     odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(
-    odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(
-        node_, "/sdf_map/odom", 100));
-
-    sync_image_odom_.reset(
-// ROS1:         new message_filters::Synchronizer<SyncPolicyImageOdom>(
-        new message_filters::Synchronizer<SyncPolicyImageOdom>(
-            SyncPolicyImageOdom(100), *depth_sub_, *odom_sub_));
+    depth_sub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::Image>>(
+        node_, "/sdf_map/depth", qos);
+    odom_sub_ = std::make_shared<message_filters::Subscriber<nav_msgs::msg::Odometry>>(
+        node_, "/sdf_map/odom", qos);
+    sync_image_odom_ = std::make_shared<SynchronizerImageOdom>(
+        SynchronizerImageOdom(100), *depth_sub_, *odom_sub_);
     sync_image_odom_->registerCallback(
-        boost::bind(&SDFMap::depthOdomCallback, this, _1, _2));
+        std::bind(&SDFMap::depthOdomCallback, this, std::placeholders::_1, std::placeholders::_2));
   }
 
-  // use odometry and point cloud
+  // independent subscribers using create_subscription
+  indep_cloud_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(
+      "/sdf_map/cloud", qos,
+      [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+        cloudCallback(msg);
+      });
 
-  indep_cloud_sub_ = node_.subscribe<sensor_msgs::PointCloud2>(
-      "/sdf_map/cloud", 10, &SDFMap::cloudCallback, this);
-  indep_odom_sub_ = node_.subscribe<nav_msgs::Odometry>(
-      "/sdf_map/odom", 10, &SDFMap::odomCallback, this);
+  indep_odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(
+      "/sdf_map/odom", qos,
+      [this](const nav_msgs::msg::Odometry::SharedPtr msg) {
+        odomCallback(msg);
+      });
 
-  occ_timer_ = node_.createTimer(ros::Duration(0.05),
-                                 &SDFMap::updateOccupancyCallback, this);
-  esdf_timer_ =
-      node_.createTimer(ros::Duration(0.05), &SDFMap::updateESDFCallback, this);
-  vis_timer_ =
-      node_.createTimer(ros::Duration(0.05), &SDFMap::visCallback, this);
+  // timers using create_timer
+  occ_timer_ = node_->create_timer(std::chrono::milliseconds(50),
+                                     [this]() { updateOccupancyCallback(); });
+  esdf_timer_ = node_->create_timer(std::chrono::milliseconds(50),
+                                     [this]() { updateESDFCallback(); });
+  vis_timer_ = node_->create_timer(std::chrono::milliseconds(50),
+                                   [this]() { visCallback(); });
 
-  map_pub_ =
-      node_.advertise<sensor_msgs::PointCloud2>("/sdf_map/occupancy", 10);
-  map_inf_pub_ = node_.advertise<sensor_msgs::PointCloud2>(
-      "/sdf_map/occupancy_inflate", 10);
-  esdf_pub_ = node_.advertise<sensor_msgs::PointCloud2>("/sdf_map/esdf", 10);
-  update_range_pub_ =
-      node_.advertise<visualization_msgs::Marker>("/sdf_map/update_range", 10);
-
-  unknown_pub_ =
-      node_.advertise<sensor_msgs::PointCloud2>("/sdf_map/unknown", 10);
-  depth_pub_ =
-      node_.advertise<sensor_msgs::PointCloud2>("/sdf_map/depth_cloud", 10);
+  // publishers using create_publisher
+  map_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("/sdf_map/occupancy", qos);
+  map_inf_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("/sdf_map/occupancy_inflate", qos);
+  esdf_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("/sdf_map/esdf", qos);
+  update_range_pub_ = node_->create_publisher<visualization_msgs::msg::Marker>("/sdf_map/update_range", qos);
+  unknown_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("/sdf_map/unknown", qos);
+  depth_pub_ = node_->create_publisher<sensor_msgs::msg::PointCloud2>("/sdf_map/depth_cloud", qos);
 
   md_.occ_need_update_ = false;
   md_.local_updated_ = false;
@@ -267,6 +224,9 @@ node_->get_parameter("sdf_map/ground_height", mp_);
   rand_noise_ = uniform_real_distribution<double>(-0.2, 0.2);
   rand_noise2_ = normal_distribution<double>(0, 0.2);
   random_device rd;
+  eng_ = default_random_engine(rd());
+}
+
   eng_ = default_random_engine(rd());
 }
 
@@ -389,11 +349,11 @@ void SDFMap::updateESDF3d() {
         } else if (md_.occupancy_buffer_inflate_[idx] == 1) {
           md_.occupancy_buffer_neg[idx] = 0;
         } else {
-          ROS_ERROR("what?");
+          RCLCPP_ERROR(node_->get_logger(), "what?");
         }
       }
 
-  ros::Time t1, t2;
+  rclcpp::Time t1, t2;
 
   for (int x = min_esdf[0]; x <= max_esdf[0]; x++) {
     for (int y = min_esdf[1]; y <= max_esdf[1]; y++) {
@@ -574,7 +534,7 @@ void SDFMap::raycastProcess() {
   // if (md_.proj_points_.size() == 0)
   if (md_.proj_points_cnt == 0) return;
 
-  ros::Time t1, t2;
+  rclcpp::Time t1, t2;
 
   md_.raycast_num_ += 1;
 
@@ -870,7 +830,7 @@ void SDFMap::clearAndInflateLocalMap() {
 }
 
 // ROS1: void SDFMap::visCallback(const ros::TimerEvent& /*event*/) {
-void SDFMap::visCallback(const rclcpp::TimerEvent& /*event*/) {
+void SDFMap::visCallback() {
   publishMap();
   publishMapInflate(false);
   // publishUpdateRange();
@@ -881,13 +841,13 @@ void SDFMap::visCallback(const rclcpp::TimerEvent& /*event*/) {
 }
 
 // ROS1: void SDFMap::updateOccupancyCallback(const ros::TimerEvent& /*event*/) {
-void SDFMap::updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/) {
+void SDFMap::updateOccupancyCallback() {
   if (!md_.occ_need_update_) return;
 
   /* update occupancy */
-  ros::Time t1, t2;
+  rclcpp::Time t1, t2;
 // ROS1:   t1 = ros::Time::now();
-  t1 = rclcpp::Clock().now();
+  t1 = node_->get_clock()->now();
 
   projectDepthImage();
   raycastProcess();
@@ -895,13 +855,13 @@ void SDFMap::updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/) {
   if (md_.local_updated_) clearAndInflateLocalMap();
 
 // ROS1:   t2 = ros::Time::now();
-  t2 = rclcpp::Clock().now();
+  t2 = node_->get_clock()->now();
 
   md_.fuse_time_ += (t2 - t1).toSec();
   md_.max_fuse_time_ = max(md_.max_fuse_time_, (t2 - t1).toSec());
 
   if (mp_.show_occ_time_)
-    ROS_WARN("Fusion: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).toSec(),
+    RCLCPP_WARN(node_->get_logger(), "Fusion: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).toSec(),
              md_.fuse_time_ / md_.update_num_, md_.max_fuse_time_);
 
   md_.occ_need_update_ = false;
@@ -910,31 +870,31 @@ void SDFMap::updateOccupancyCallback(const rclcpp::TimerEvent& /*event*/) {
 }
 
 // ROS1: void SDFMap::updateESDFCallback(const ros::TimerEvent& /*event*/) {
-void SDFMap::updateESDFCallback(const rclcpp::TimerEvent& /*event*/) {
+void SDFMap::updateESDFCallback() {
   if (!md_.esdf_need_update_) return;
 
   /* esdf */
-  ros::Time t1, t2;
+  rclcpp::Time t1, t2;
 // ROS1:   t1 = ros::Time::now();
-  t1 = rclcpp::Clock().now();
+  t1 = node_->get_clock()->now();
 
   updateESDF3d();
 
 // ROS1:   t2 = ros::Time::now();
-  t2 = rclcpp::Clock().now();
+  t2 = node_->get_clock()->now();
 
   md_.esdf_time_ += (t2 - t1).toSec();
   md_.max_esdf_time_ = max(md_.max_esdf_time_, (t2 - t1).toSec());
 
   if (mp_.show_esdf_time_)
-    ROS_WARN("ESDF: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).toSec(),
+    RCLCPP_WARN(node_->get_logger(), "ESDF: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).toSec(),
              md_.esdf_time_ / md_.update_num_, md_.max_esdf_time_);
 
   md_.esdf_need_update_ = false;
 }
 
-void SDFMap::depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
-                               const geometry_msgs::PoseStampedConstPtr& pose) {
+void SDFMap::depthPoseCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
+                               const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose) {
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
@@ -964,7 +924,7 @@ void SDFMap::depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
   }
 }
 
-void SDFMap::odomCallback(const nav_msgs::OdometryConstPtr& odom) {
+void SDFMap::odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr& odom) {
   if (md_.has_first_depth_) return;
 
   md_.camera_pos_(0) = odom->pose.pose.position.x;
@@ -974,7 +934,7 @@ void SDFMap::odomCallback(const nav_msgs::OdometryConstPtr& odom) {
   md_.has_odom_ = true;
 }
 
-void SDFMap::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img) {
+void SDFMap::cloudCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& img) {
   pcl::PointCloud<pcl::PointXYZ> latest_cloud;
   pcl::fromROSMsg(*img, latest_cloud);
 
@@ -1103,7 +1063,7 @@ void SDFMap::publishMap() {
   // cloud.is_dense = true;
   // cloud.header.frame_id = mp_.frame_id_;
 
-  // sensor_msgs::PointCloud2 cloud_msg;
+  // sensor_msgs::msg::PointCloud2 cloud_msg;
   // pcl::toROSMsg(cloud, cloud_msg);
   // map_pub_.publish(cloud_msg);
 
@@ -1141,7 +1101,7 @@ void SDFMap::publishMap() {
   cloud.height = 1;
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
 
   pcl::toROSMsg(cloud, cloud_msg);
   map_pub_.publish(cloud_msg);
@@ -1182,7 +1142,7 @@ void SDFMap::publishMapInflate(bool all_info) {
   cloud.height = 1;
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
 
   pcl::toROSMsg(cloud, cloud_msg);
   map_inf_pub_.publish(cloud_msg);
@@ -1226,7 +1186,7 @@ void SDFMap::publishUnknown() {
   // sz(2) << "="
   //           << double(cloud.width) / (sz(0) * sz(1) * sz(2)) << std::endl;
 
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
   unknown_pub_.publish(cloud_msg);
 }
@@ -1247,14 +1207,14 @@ void SDFMap::publishDepth() {
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
 
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
   depth_pub_.publish(cloud_msg);
 }
 
 void SDFMap::publishUpdateRange() {
   Eigen::Vector3d esdf_min_pos, esdf_max_pos, cube_pos, cube_scale;
-  visualization_msgs::Marker mk;
+  visualization_msgs::msg::Marker mk;
   indexToPos(md_.local_bound_min_, esdf_min_pos);
   indexToPos(md_.local_bound_max_, esdf_max_pos);
 
@@ -1262,9 +1222,9 @@ void SDFMap::publishUpdateRange() {
   cube_scale = esdf_max_pos - esdf_min_pos;
   mk.header.frame_id = mp_.frame_id_;
 // ROS1:   mk.header.stamp = ros::Time::now();
-  mk.header.stamp = rclcpp::Clock().now();
-  mk.type = visualization_msgs::Marker::CUBE;
-  mk.action = visualization_msgs::Marker::ADD;
+  mk.header.stamp = node_->get_clock()->now();
+  mk.type = visualization_msgs::msg::Marker::CUBE;
+  mk.action = visualization_msgs::msg::Marker::ADD;
   mk.id = 0;
 
   mk.pose.position.x = cube_pos(0);
@@ -1328,7 +1288,7 @@ void SDFMap::publishESDF() {
   cloud.height = 1;
   cloud.is_dense = true;
   cloud.header.frame_id = mp_.frame_id_;
-  sensor_msgs::PointCloud2 cloud_msg;
+  sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
 
   esdf_pub_.publish(cloud_msg);
@@ -1409,8 +1369,8 @@ void SDFMap::getSurroundPts(const Eigen::Vector3d& pos,
   }
 }
 
-void SDFMap::depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
-                               const nav_msgs::OdometryConstPtr& odom) {
+void SDFMap::depthOdomCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
+                               const nav_msgs::msg::Odometry::ConstSharedPtr& odom) {
   /* get pose */
   md_.camera_pos_(0) = odom->pose.pose.position.x;
   md_.camera_pos_(1) = odom->pose.pose.position.y;
@@ -1431,11 +1391,11 @@ void SDFMap::depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
   md_.occ_need_update_ = true;
 }
 
-void SDFMap::depthCallback(const sensor_msgs::ImageConstPtr& img) {
+void SDFMap::depthCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img) {
   std::cout << "depth: " << img->header.stamp << std::endl;
 }
 
-void SDFMap::poseCallback(const geometry_msgs::PoseStampedConstPtr& pose) {
+void SDFMap::poseCallback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose) {
   std::cout << "pose: " << pose->header.stamp << std::endl;
 
   md_.camera_pos_(0) = pose->pose.position.x;
