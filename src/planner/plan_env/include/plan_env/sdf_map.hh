@@ -281,7 +281,7 @@ class SDFMap {
 // ROS1:   ros::Publisher unknown_pub_, depth_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr unknown_pub_, depth_pub_;
 // ROS1:   ros::Timer occ_timer_, esdf_timer_, vis_timer_;
-  rclcpp::Timer::SharedPtr occ_timer_, esdf_timer_, vis_timer_;
+  rclcpp::TimerBase::SharedPtr occ_timer_, esdf_timer_, vis_timer_;
 
   //
   uniform_real_distribution<double> rand_noise_;

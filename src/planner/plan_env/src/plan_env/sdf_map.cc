@@ -227,8 +227,6 @@ void SDFMap::initMap(rclcpp::Node::SharedPtr nh) {
   eng_ = default_random_engine(rd());
 }
 
-  eng_ = default_random_engine(rd());
-}
 
 void SDFMap::resetBuffer() {
   Eigen::Vector3d min_pos = mp_.map_min_boundary_;
@@ -857,11 +855,11 @@ void SDFMap::updateOccupancyCallback() {
 // ROS1:   t2 = ros::Time::now();
   t2 = node_->get_clock()->now();
 
-  md_.fuse_time_ += (t2 - t1).toSec();
-  md_.max_fuse_time_ = max(md_.max_fuse_time_, (t2 - t1).toSec());
+  md_.fuse_time_ += (t2 - t1).seconds();
+  md_.max_fuse_time_ = max(md_.max_fuse_time_, (t2 - t1).seconds());
 
   if (mp_.show_occ_time_)
-    RCLCPP_WARN(node_->get_logger(), "Fusion: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).toSec(),
+    RCLCPP_WARN(node_->get_logger(), "Fusion: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).seconds(),
              md_.fuse_time_ / md_.update_num_, md_.max_fuse_time_);
 
   md_.occ_need_update_ = false;
@@ -883,11 +881,11 @@ void SDFMap::updateESDFCallback() {
 // ROS1:   t2 = ros::Time::now();
   t2 = node_->get_clock()->now();
 
-  md_.esdf_time_ += (t2 - t1).toSec();
-  md_.max_esdf_time_ = max(md_.max_esdf_time_, (t2 - t1).toSec());
+  md_.esdf_time_ += (t2 - t1).seconds();
+  md_.max_esdf_time_ = max(md_.max_esdf_time_, (t2 - t1).seconds());
 
   if (mp_.show_esdf_time_)
-    RCLCPP_WARN(node_->get_logger(), "ESDF: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).toSec(),
+    RCLCPP_WARN(node_->get_logger(), "ESDF: cur t = %lf, avg t = %lf, max t = %lf", (t2 - t1).seconds(),
              md_.esdf_time_ / md_.update_num_, md_.max_esdf_time_);
 
   md_.esdf_need_update_ = false;
@@ -1065,7 +1063,7 @@ void SDFMap::publishMap() {
 
   // sensor_msgs::msg::PointCloud2 cloud_msg;
   // pcl::toROSMsg(cloud, cloud_msg);
-  // map_pub_.publish(cloud_msg);
+  // map_pub_->publish(cloud_msg);
 
   // ROS_INFO("pub map");
 
@@ -1104,7 +1102,7 @@ void SDFMap::publishMap() {
   sensor_msgs::msg::PointCloud2 cloud_msg;
 
   pcl::toROSMsg(cloud, cloud_msg);
-  map_pub_.publish(cloud_msg);
+  map_pub_->publish(cloud_msg);
 }
 
 void SDFMap::publishMapInflate(bool all_info) {
@@ -1145,7 +1143,7 @@ void SDFMap::publishMapInflate(bool all_info) {
   sensor_msgs::msg::PointCloud2 cloud_msg;
 
   pcl::toROSMsg(cloud, cloud_msg);
-  map_inf_pub_.publish(cloud_msg);
+  map_inf_pub_->publish(cloud_msg);
 
   // ROS_INFO("pub map");
 }
@@ -1188,7 +1186,7 @@ void SDFMap::publishUnknown() {
 
   sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
-  unknown_pub_.publish(cloud_msg);
+  unknown_pub_->publish(cloud_msg);
 }
 
 void SDFMap::publishDepth() {
@@ -1209,7 +1207,7 @@ void SDFMap::publishDepth() {
 
   sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
-  depth_pub_.publish(cloud_msg);
+  depth_pub_->publish(cloud_msg);
 }
 
 void SDFMap::publishUpdateRange() {
@@ -1245,7 +1243,7 @@ void SDFMap::publishUpdateRange() {
   mk.pose.orientation.y = 0.0;
   mk.pose.orientation.z = 0.0;
 
-  update_range_pub_.publish(mk);
+  update_range_pub_->publish(mk);
 }
 
 void SDFMap::publishESDF() {
@@ -1291,7 +1289,7 @@ void SDFMap::publishESDF() {
   sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
 
-  esdf_pub_.publish(cloud_msg);
+  esdf_pub_->publish(cloud_msg);
 
   // ROS_INFO("pub esdf");
 }
@@ -1392,11 +1390,13 @@ void SDFMap::depthOdomCallback(const sensor_msgs::msg::Image::ConstSharedPtr& im
 }
 
 void SDFMap::depthCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img) {
-  std::cout << "depth: " << img->header.stamp << std::endl;
+  // ROS2: Time does not stream directly
+  // std::cout << "depth: " << img->header.stamp << std::endl;
 }
 
 void SDFMap::poseCallback(const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose) {
-  std::cout << "pose: " << pose->header.stamp << std::endl;
+  // ROS2: Time does not stream directly
+  // std::cout << "pose: " << pose->header.stamp << std::endl;
 
   md_.camera_pos_(0) = pose->pose.position.x;
   md_.camera_pos_(1) = pose->pose.position.y;
