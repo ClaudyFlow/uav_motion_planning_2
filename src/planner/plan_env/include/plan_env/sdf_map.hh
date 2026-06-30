@@ -271,8 +271,10 @@ class SDFMap {
   shared_ptr<message_filters::Subscriber<geometry_msgs::msg::PoseStamped>> pose_sub_;
 // ROS1:   shared_ptr<message_filters::Subscriber<nav_msgs::Odometry>> odom_sub_;
   shared_ptr<message_filters::Subscriber<nav_msgs::msg::Odometry>> odom_sub_;
-  SynchronizerImagePose sync_image_pose_;
-  SynchronizerImageOdom sync_image_odom_;
+  std::shared_ptr<message_filters::Synchronizer<SyncPolicyImagePose>>
+      sync_image_pose_;
+  std::shared_ptr<message_filters::Synchronizer<SyncPolicyImageOdom>>
+      sync_image_odom_;
 
 // ROS1:   ros::Subscriber indep_depth_sub_, indep_odom_sub_, indep_pose_sub_,
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr indep_cloud_sub_;
