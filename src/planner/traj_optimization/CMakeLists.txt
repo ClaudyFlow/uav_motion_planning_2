@@ -51,5 +51,9 @@ file(GLOB_RECURSE TRAJ_OPT_SOURCES "src/*.cc")
 
 add_library(traj_optimization ${TRAJ_OPT_SOURCES})
 
+target_include_directories(traj_optimization PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 ament_export_dependencies(Eigen3)
 ament_package()
