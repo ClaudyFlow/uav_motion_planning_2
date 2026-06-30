@@ -181,12 +181,12 @@ void GridMap::initMap(rclcpp::Node::SharedPtr nh) {
   // independent subscribers
   indep_cloud_sub_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(
       "/grid_map/cloud", 10,
-      [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+      [this](const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) {
         this->cloudCallback(msg);
       });
   indep_odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(
       "/grid_map/odom", 10,
-      [this](const nav_msgs::msg::Odometry::SharedPtr msg) {
+      [this](const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
         this->odomCallback(msg);
       });
 
@@ -704,8 +704,8 @@ void GridMap::updateOccupancyCallback() {
 }
 
 void GridMap::depthPoseCallback(
-    const sensor_msgs::ImageConstPtr& img,
-    const geometry_msgs::PoseStampedConstPtr& pose) {
+    const sensor_msgs::msg::Image::ConstSharedPtr& img,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr& pose) {
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
@@ -734,7 +734,7 @@ void GridMap::depthPoseCallback(
     md_.occ_need_update_ = false;
   }
 }
-void GridMap::odomCallback(const nav_msgs::OdometryConstPtr& odom) {
+void GridMap::odomCallback(const nav_msgs::msg::Odometry::ConstSharedPtr& odom) {
   if (md_.has_first_depth_) return;
 
   md_.camera_pos_(0) = odom->pose.pose.position.x;
@@ -744,7 +744,7 @@ void GridMap::odomCallback(const nav_msgs::OdometryConstPtr& odom) {
   md_.has_odom_ = true;
 }
 
-void GridMap::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img) {
+void GridMap::cloudCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& img) {
   pcl::PointCloud<pcl::PointXYZ> latest_cloud;
   pcl::fromROSMsg(*img, latest_cloud);
 
@@ -836,7 +836,7 @@ void GridMap::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& img) {
 }
 
 void GridMap::publishMap() {
-  if (map_pub_->count() <= 0) return;
+  if (map_pub_->get_subscription_count() <= 0) return;
 
   pcl::PointXYZ pt;
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -874,11 +874,11 @@ void GridMap::publishMap() {
 
   pcl::toROSMsg(cloud, cloud_msg);
   cloud_msg.header.frame_id = mp_.frame_id_;
-  map_pub_->publish(std::make_shared<sensor_msgs::msg::PointCloud2>(cloud_msg));
+  map_pub_->publish(cloud_msg);
 }
 
 void GridMap::publishMapInflate(bool all_info) {
-  if (map_inf_pub_->count() <= 0) return;
+  if (map_inf_pub_->get_subscription_count() <= 0) return;
 
   pcl::PointXYZ pt;
   pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -918,7 +918,7 @@ void GridMap::publishMapInflate(bool all_info) {
 
   pcl::toROSMsg(cloud, cloud_msg);
   cloud_msg.header.frame_id = mp_.frame_id_;
-  map_inf_pub_->publish(std::make_shared<sensor_msgs::msg::PointCloud2>(cloud_msg));
+  map_inf_pub_->publish(cloud_msg);
 
   // ROS_INFO("pub map");
 }
@@ -957,7 +957,7 @@ void GridMap::publishUnknown() {
   sensor_msgs::msg::PointCloud2 cloud_msg;
   pcl::toROSMsg(cloud, cloud_msg);
   cloud_msg.header.frame_id = mp_.frame_id_;
-  unknown_pub_->publish(std::make_shared<sensor_msgs::msg::PointCloud2>(cloud_msg));
+  unknown_pub_->publish(cloud_msg);
 }
 
 bool GridMap::odomValid() { return md_.has_odom_; }
@@ -975,8 +975,8 @@ void GridMap::getRegion(Eigen::Vector3d& ori, Eigen::Vector3d& size) {
   ori = mp_.map_origin_, size = mp_.map_size_;
 }
 
-void GridMap::depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
-                                const nav_msgs::OdometryConstPtr& odom) {
+void GridMap::depthOdomCallback(const sensor_msgs::msg::Image::ConstSharedPtr& img,
+                                const nav_msgs::msg::Odometry::ConstSharedPtr& odom) {
   /* get pose */
   Eigen::Quaterniond body_q = Eigen::Quaterniond(
       odom->pose.pose.orientation.w, odom->pose.pose.orientation.x,
