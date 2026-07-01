@@ -264,6 +264,10 @@ find_package(nav_msgs REQUIRED)
 
 find_package(geometry_msgs REQUIRED)
 
+# Workaround: geometry_msgs cmake config may not define INCLUDE_DIRS variable
+# Add include path manually for lyrical
+include_directories(/opt/ros/lyrical/include)
+
 find_package(Eigen3 REQUIRED)
 
 
