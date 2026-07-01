@@ -49,6 +49,10 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+# Workaround: ensure workspace install directory is in CMAKE_PREFIX_PATH
+# so that find_package(plan_env) can locate plan_envConfig.cmake
+# even when plan_env install target has not completed yet
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../install")
 find_package(plan_env REQUIRED)
 find_package(Eigen3 REQUIRED)
 
