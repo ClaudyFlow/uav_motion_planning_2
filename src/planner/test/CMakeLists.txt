@@ -127,6 +127,8 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
+# Workaround: ensure workspace install directory is in CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../install")
 find_package(plan_env REQUIRED)
 find_package(path_searching REQUIRED)
 find_package(traj_optimization REQUIRED)

@@ -241,6 +241,8 @@ find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+# Workaround: ensure workspace install directory is in CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../install")
 find_package(plan_env REQUIRED)
 
 add_executable(multi_map_visualization src/multi_map_visualization.cc)

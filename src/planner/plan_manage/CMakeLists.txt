@@ -225,6 +225,8 @@ find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
+# Workaround: ensure workspace install directory is in CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../install")
 find_package(plan_env REQUIRED)
 find_package(path_searching REQUIRED)
 find_package(traj_optimization REQUIRED)
