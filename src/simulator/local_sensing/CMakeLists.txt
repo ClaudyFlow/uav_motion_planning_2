@@ -256,6 +256,15 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 
+# Add ROS include paths for lyrical geometry_msgs etc.
+# (ament_target_dependencies workaround doesn't reliably propagate these)
+include_directories(
+  /opt/ros/lyrical/include
+  /opt/ros/lyrical/include/geometry_msgs
+  /opt/ros/lyrical/include/sensor_msgs
+  /opt/ros/lyrical/include/nav_msgs
+)
+
 find_package(rclcpp REQUIRED)
 
 find_package(sensor_msgs REQUIRED)
