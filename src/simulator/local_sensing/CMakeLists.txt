@@ -264,10 +264,6 @@ find_package(nav_msgs REQUIRED)
 
 find_package(geometry_msgs REQUIRED)
 
-# Workaround: geometry_msgs cmake config may not define INCLUDE_DIRS variable
-# Add include path manually for lyrical
-include_directories(/opt/ros/lyrical/include)
-
 find_package(Eigen3 REQUIRED)
 
 
@@ -296,6 +292,8 @@ add_executable(pcl_render_node src/pcl_render_node.cpp)
 
 ament_target_dependencies(pcl_render_node rclcpp sensor_msgs nav_msgs geometry_msgs)
 
+target_include_directories(pcl_render_node PRIVATE /opt/ros/lyrical/include)
+
 target_link_libraries(pcl_render_node Eigen3::Eigen)
 
 
@@ -303,6 +301,8 @@ target_link_libraries(pcl_render_node Eigen3::Eigen)
 add_executable(pointcloud_render_node src/pointcloud_render_node.cpp)
 
 ament_target_dependencies(pointcloud_render_node rclcpp sensor_msgs nav_msgs geometry_msgs)
+
+target_include_directories(pointcloud_render_node PRIVATE /opt/ros/lyrical/include)
 
 target_link_libraries(pointcloud_render_node Eigen3::Eigen)
 
