@@ -124,6 +124,7 @@ find_package(ament_cmake REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(rosidl_default_runtime REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   msg/AuxCommand.msg
@@ -145,6 +146,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 add_library(decode_msgs src/decode_msgs.cpp)
 add_library(encode_msgs src/encode_msgs.cpp)
 
+add_dependencies(decode_msgs ${PROJECT_NAME}__rosidl_generator_cpp)
+add_dependencies(encode_msgs ${PROJECT_NAME}__rosidl_generator_cpp)
+
 target_include_directories(decode_msgs PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp
@@ -155,6 +159,7 @@ target_include_directories(encode_msgs PUBLIC
 )
 
 ament_export_dependencies(std_msgs geometry_msgs)
-ament_export_dependencies(rosidl_default_generators)
+ament_export_rosidl_interfaces(${PROJECT_NAME}__)
+ament_export_dependencies(rosidl_default_generators rosidl_default_runtime)
 ament_export_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 ament_package()
