@@ -304,7 +304,7 @@ target_link_libraries(pointcloud_render_node Eigen3::Eigen)
 
 
 
-ament_export_dependencies(rclcpp sensor_msgs nav_msgs)
+ament_export_dependencies(rclcpp sensor_msgs nav_msgs geometry_msgs)
 
 ament_package()
 
