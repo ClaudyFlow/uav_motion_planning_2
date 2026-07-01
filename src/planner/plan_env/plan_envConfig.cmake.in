@@ -1,0 +1,15 @@
+# plan_envConfig.cmake.in
+# Template for plan_env cmake config file
+# This file configures the exported targets and include directories
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(rclcpp REQUIRED)
+find_dependency(std_msgs REQUIRED)
+find_dependency(service_msgs REQUIRED)
+find_dependency(Eigen3 REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/plan_envTargets.cmake")
+
+check_required_components(plan_env)
