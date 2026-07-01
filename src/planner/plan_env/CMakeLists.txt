@@ -705,17 +705,16 @@ target_include_directories(plan_env PUBLIC
 
 ament_export_dependencies(rclcpp std_msgs service_msgs Eigen3)
 
-# Export targets to build directory for downstream CMake configure phase
-export(TARGETS plan_env FILE "plan_envTargets.cmake")
-
-# Configure and install cmake config files so downstream packages can find this package
+# Generate cmake config files for downstream find_package
 include(CMakePackageConfigHelpers)
+
 configure_package_config_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/plan_envConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/plan_envConfig.cmake
   INSTALL_DESTINATION "lib/cmake/${PROJECT_NAME}"
   NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
+
 write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   VERSION 1.0.0
@@ -728,7 +727,6 @@ install(TARGETS plan_env
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
 
-# Install cmake config files to the prefix
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/plan_envConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
