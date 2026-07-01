@@ -704,15 +704,6 @@ target_include_directories(plan_env PUBLIC
 
 
 ament_export_dependencies(rclcpp std_msgs service_msgs Eigen3)
-ament_export_targets(plan_envTargets HAS_LIBRARY_TARGET)
-ament_export_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-install(TARGETS plan_env
-  ARCHIVE DESTINATION lib/${PROJECT_NAME}
-  LIBRARY DESTINATION lib/${PROJECT_NAME}
-  RUNTIME DESTINATION bin)
-install(DIRECTORY include/ DESTINATION include)
-
-ament_auto_package()
+ament_package()
 
 
