@@ -707,14 +707,12 @@ ament_export_dependencies(rclcpp std_msgs service_msgs Eigen3)
 ament_export_targets(plan_envTargets HAS_LIBRARY_TARGET)
 ament_export_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ament_auto_generate_cmake_config()
-
 install(TARGETS plan_env
   ARCHIVE DESTINATION lib/${PROJECT_NAME}
   LIBRARY DESTINATION lib/${PROJECT_NAME}
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
 
-ament_package()
+ament_auto_package()
 
 
