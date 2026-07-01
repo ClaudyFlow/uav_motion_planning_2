@@ -704,6 +704,13 @@ target_include_directories(plan_env PUBLIC
 
 
 ament_export_dependencies(rclcpp std_msgs service_msgs Eigen3)
+
+install(TARGETS plan_env
+  ARCHIVE DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION bin)
+install(DIRECTORY include/ DESTINATION include)
+
 ament_package()
 
 
