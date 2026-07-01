@@ -718,7 +718,7 @@ configure_package_config_file(
 )
 write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-  VERSION ${PROJECT_VERSION}
+  VERSION 1.0.0
   COMPATIBILITY SameMajorVersion
 )
 
