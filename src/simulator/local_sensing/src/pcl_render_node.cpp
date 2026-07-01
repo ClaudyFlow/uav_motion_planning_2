@@ -1,6 +1,4 @@
 #include <fstream>
-// ROS1: #include <dynamic_reconfigure/server.h>
-#include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <image_transport/image_transport.h>
